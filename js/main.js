@@ -10,7 +10,7 @@ import { ProblemModal } from "./components/problemModal.js";
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
 
 const API = "";
-const INTRO_DURATION = 6500;
+const INTRO_DURATION = 4800;
 const $ = (selector) => document.querySelector(selector);
 const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ({
   "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;"
@@ -89,17 +89,17 @@ function initIntro() {
   const presents = $("#presents");
   const name = $("#hackathon-name");
 
-  setTimeout(() => show(vitap, "opacity .9s ease,transform .9s ease,filter .9s ease", "scale(1)"), 150);
+  setTimeout(() => show(vitap, "opacity .9s ease,transform .9s ease,filter .9s ease", "scale(1)"), 100);
   setTimeout(() => {
     if (!vitap) return;
     vitap.style.transition = "opacity .9s ease,transform .9s ease,filter .9s ease";
     vitap.style.opacity = "0";
     vitap.style.transform = "scale(1.06)";
     vitap.style.filter = "blur(7px)";
-  }, 2200);
-  setTimeout(() => show(organizers, "opacity .8s ease,transform .8s ease", "scale(1)"), 2100);
-  setTimeout(() => show(presents, "opacity .5s ease,transform .5s ease", "translateY(0)"), 3100);
-  setTimeout(() => show(name, "opacity .8s ease,transform .8s ease", "translateY(0) scale(1)"), 3900);
+  }, 1700);
+  setTimeout(() => show(organizers, "opacity .8s ease,transform .8s ease", "scale(1)"), 1650);
+  setTimeout(() => show(presents, "opacity .5s ease,transform .5s ease", "translateY(0)"), 2650);
+  setTimeout(() => show(name, "opacity .8s ease,transform .8s ease", "translateY(0) scale(1)"), 3250);
 
   const finish = () => {
     intro.classList.add("intro-finished");
