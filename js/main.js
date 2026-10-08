@@ -310,14 +310,31 @@ function connectLiveLeaderboard() {
   };
 }
 
-function setAdminVisibility() {
-  const loggedIn = Boolean(adminKey);
+function setAdminVisibility(loggedIn = Boolean(adminKey)) {
   const section = $("#admin");
   if (!section) return;
   section.hidden = !loggedIn;
   $("#adminLoginView").hidden = loggedIn;
   $("#adminDashboardView").hidden = !loggedIn;
   $("#adminNavLink").hidden = !loggedIn;
+  $("#footerAdminLink").hidden = !loggedIn;
+}
+
+async function restoreAdminSession() {
+  if (!adminKey) {
+    setAdminVisibility(false);
+    return;
+  }
+
+  try {
+    await verifyAdminKey(adminKey);
+    setAdminVisibility(true);
+    await refreshAdmin();
+  } catch {
+    adminKey = "";
+    sessionStorage.removeItem("hackathonAdminKey");
+    setAdminVisibility(false);
+  }
 }
 
 async function verifyAdminKey(key) {
@@ -527,8 +544,9 @@ document.addEventListener("DOMContentLoaded", () => {
   renderProblemArea();
   bindProblems();
   bindAdmin();
-  setAdminVisibility();
+  setAdminVisibility(false);
   initIntro();
   refreshPublicData();
   connectLiveLeaderboard();
+  restoreAdminSession();
 });
