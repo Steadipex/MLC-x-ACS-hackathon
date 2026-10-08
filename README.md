@@ -1,4 +1,4 @@
-# Hackathon Backend (ML x AMC)
+# Hackathon Backend (MLC x ACS)
 
 Node.js + Express API for teams, points, and the live leaderboard. Data is saved in `data/db.json`, so there is no database to set up.
 
