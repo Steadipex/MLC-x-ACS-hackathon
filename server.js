@@ -16,7 +16,12 @@ const app = express();
 app.use(express.json({ limit: '100kb' }));
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-app.use(express.static(__dirname));
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
+app.use('/css', express.static(path.join(__dirname, 'css')));
+app.use('/js', express.static(path.join(__dirname, 'js')));
+app.get('/data/problems.js', (req, res) => {
+  res.sendFile(path.join(__dirname, 'data', 'problems.js'));
+});
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', CORS_ORIGIN);
