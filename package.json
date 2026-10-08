@@ -1,7 +1,7 @@
 {
-  "name": "hackathon-backend",
+  "name": "mlc-acs-hackathon",
   "version": "1.0.0",
-  "description": "Leaderboard + admin API for the ML x AMC hackathon",
+  "description": "MLC x ACS Hackathon website with live leaderboard and admin dashboard",
   "type": "module",
   "main": "server.js",
   "scripts": {

@@ -1,9 +1,3 @@
-/**
- * ML x ACS Hackathon - Main Application Entrypoint
- * Orchestrates card rendering, filtering by difficulty, search, modal dialogs,
- * URL parameter handling, and subtle hero canvas visual effects.
- */
-
 import {
   problems,
   getProblemById,
@@ -11,1350 +5,548 @@ import {
   getDifficultyStats
 } from "../data/problems.js";
 
-import {
-  createProblemCard
-} from "./components/problemCard.js";
+import { createProblemCard } from "./components/problemCard.js";
+import { ProblemModal } from "./components/problemModal.js";
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
+
+const API = "";
+const INTRO_DURATION = 4800;
+const $ = (selector) => document.querySelector(selector);
+const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ({
+  "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;"
+}[c]));
 
-import {
-  ProblemModal
-} from "./components/problemModal.js";
-
-
-/* =========================================================
-   THREE.JS INTRO ANIMATION
-   ========================================================= */
-
-import * as THREE from
-  "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
-
-
-// ==========================================
-// TIMING
-// ==========================================
-
-const TIMING = {
-
-  // VIT-AP appears immediately
-  vitapIn: 0,
-
-  // VIT-AP starts leaving
-  vitapOut: 3000,
-
-  // MLC × ACS appears
-  organizersIn: 3000,
-
-  // PRESENTS appears
-  presentsIn: 4200,
-
-  // Hackathon name appears
-  hackathonIn: 5000,
-
-  // Entire intro disappears
-  introOut: 8500
-
-};
-
-
-// ==========================================
-// DOM
-// ==========================================
-
-const canvas =
-  document.getElementById("three-canvas");
-
-const intro =
-  document.getElementById("intro");
-
-const vitap =
-  document.getElementById("vitap");
-
-const organizers =
-  document.getElementById("organizers");
-
-const presents =
-  document.getElementById("presents");
-
-const hackathonName =
-  document.getElementById("hackathon-name");
-
-
-// IMPORTANT:
-// Original animation used:
-// document.getElementById("website")
-//
-// The real website does not use #website.
-// It uses .site-wrapper.
-//
-// This is the ONLY target change needed for the merge.
-
-const website =
-  document.querySelector(".site-wrapper");
-
-
-// Keep the actual website hidden until the intro finishes.
-if (website) {
-  website.style.opacity = "0";
-}
-
-
-// ==========================================
-// HACKATHON NAME
-// ==========================================
-
-hackathonName.textContent =
-  "HACKATHON NAME";
-
-
-// ==========================================
-// THREE.JS SCENE
-// ==========================================
-
-const scene =
-  new THREE.Scene();
-
-
-// ==========================================
-// CAMERA
-// ==========================================
-
-const camera =
-  new THREE.PerspectiveCamera(
-    60,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    1000
-  );
-
-camera.position.z = 5;
-
-
-// ==========================================
-// RENDERER
-// ==========================================
-
-const renderer =
-  new THREE.WebGLRenderer({
-    canvas: canvas,
-    antialias: true,
-    alpha: true
-  });
-
-renderer.setPixelRatio(
-  Math.min(
-    window.devicePixelRatio,
-    2
-  )
-);
-
-renderer.setSize(
-  window.innerWidth,
-  window.innerHeight
-);
-
-
-// ==========================================
-// PARTICLES
-// ==========================================
-
-const particleCount = 1200;
-
-const positions =
-  new Float32Array(
-    particleCount * 3
-  );
-
-for (
-  let i = 0;
-  i < particleCount;
-  i++
-) {
-
-  const i3 = i * 3;
-
-  positions[i3] =
-    (Math.random() - 0.5) * 15;
-
-  positions[i3 + 1] =
-    (Math.random() - 0.5) * 10;
-
-  positions[i3 + 2] =
-    (Math.random() - 0.5) * 8;
-}
-
-
-const particleGeometry =
-  new THREE.BufferGeometry();
-
-particleGeometry.setAttribute(
-  "position",
-  new THREE.BufferAttribute(
-    positions,
-    3
-  )
-);
-
-
-const particleMaterial =
-  new THREE.PointsMaterial({
-    color: 0x4da6ff,
-    size: 0.025,
-    transparent: true,
-    opacity: 0.7
-  });
-
-
-const particles =
-  new THREE.Points(
-    particleGeometry,
-    particleMaterial
-  );
-
-scene.add(particles);
-
-
-// ==========================================
-// THREE.JS ANIMATION
-// ==========================================
-
-const clock =
-  new THREE.Clock();
-
-function animate() {
-
-  requestAnimationFrame(
-    animate
-  );
-
-  const elapsed =
-    clock.getElapsedTime();
-
-  particles.rotation.y =
-    elapsed * 0.025;
-
-  particles.rotation.x =
-    Math.sin(
-      elapsed * 0.1
-    ) * 0.05;
-
-  renderer.render(
-    scene,
-    camera
-  );
-}
-
-animate();
-
-
-// ==========================================
-// VIT-AP INTRO
-// ==========================================
-
-setTimeout(() => {
-
-  vitap.style.transition = `
-    opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 1.2s cubic-bezier(0.16, 1, 0.3, 1),
-    filter 1.2s ease
-  `;
-
-  vitap.style.opacity = "1";
-
-  vitap.style.transform =
-    "scale(1)";
-
-  vitap.style.filter =
-    "blur(0)";
-
-}, TIMING.vitapIn);
-
-
-// ==========================================
-// VIT-AP EXIT
-// ==========================================
-
-setTimeout(() => {
-
-  vitap.style.transition = `
-    opacity 1.4s ease,
-    transform 1.4s ease,
-    filter 1.4s ease
-  `;
-
-  vitap.style.opacity = "0";
-
-  vitap.style.transform =
-    "scale(1.12)";
-
-  // ORIGINAL BLUR
-  vitap.style.filter =
-    "blur(12px)";
-
-}, TIMING.vitapOut);
-
-
-// ==========================================
-// MLC × ACS
-// ==========================================
-
-setTimeout(() => {
-
-  organizers.style.transition = `
-    opacity 1s ease,
-    transform 1s cubic-bezier(0.16, 1, 0.3, 1)
-  `;
-
-  organizers.style.opacity = "1";
-
-  organizers.style.transform =
-    "scale(1)";
-
-}, TIMING.organizersIn);
-
-
-// ==========================================
-// PRESENTS
-// ==========================================
-
-setTimeout(() => {
-
-  presents.style.transition = `
-    opacity 0.8s ease,
-    transform 0.8s ease
-  `;
-
-  presents.style.opacity = "1";
-
-  presents.style.transform =
-    "translateY(0)";
-
-}, TIMING.presentsIn);
-
-
-// ==========================================
-// HACKATHON NAME
-// ==========================================
-
-setTimeout(() => {
-
-  hackathonName.style.transition = `
-    opacity 1s ease,
-    transform 1s cubic-bezier(0.16, 1, 0.3, 1)
-  `;
-
-  hackathonName.style.opacity = "1";
-
-  hackathonName.style.transform =
-    "scale(1) translateY(0)";
-
-}, TIMING.hackathonIn);
-
-
-// ==========================================
-// INTRO → WEBSITE
-// ==========================================
-
-setTimeout(() => {
-
-  intro.style.transition =
-    "opacity 1s ease";
-
-  intro.style.opacity = "0";
-
-  if (website) {
-
-    website.style.transition =
-      "opacity 1s ease";
-
-    website.style.opacity = "1";
-
-  }
-
-}, TIMING.introOut);
-
-
-// ==========================================
-// REMOVE INTRO
-// ==========================================
-
-setTimeout(() => {
-
-  intro.remove();
-
-  canvas.remove();
-
-  document.body.style.overflow =
-    "auto";
-
-}, TIMING.introOut + 1000);
-
-
-// ==========================================
-// RESIZE
-// ==========================================
-
-window.addEventListener(
-  "resize",
-  () => {
-
-    camera.aspect =
-      window.innerWidth /
-      window.innerHeight;
-
-    camera.updateProjectionMatrix();
-
-    renderer.setSize(
-      window.innerWidth,
-      window.innerHeight
-    );
-
-    renderer.setPixelRatio(
-      Math.min(
-        window.devicePixelRatio,
-        2
-      )
-    );
-
-  }
-);
-
-
-// =========================================================
-// ORIGINAL WEBSITE JAVASCRIPT
-// =========================================================
-
-
-// Application State
 let activeDifficulty = "all";
 let searchQuery = "";
+let adminKey = sessionStorage.getItem("hackathonAdminKey") || "";
+let teams = [];
 
+function initIntro() {
+  const intro = $("#intro");
+  const canvas = $("#three-canvas");
+  const website = $(".site-wrapper");
+  const skip = $("#skipIntro");
 
-// DOM Elements
-const problemsGrid =
-  document.getElementById(
-    "problemsGrid"
-  );
+  if (!intro) return;
 
-const difficultyNav =
-  document.getElementById(
-    "difficultyNav"
-  );
-
-const searchInput =
-  document.getElementById(
-    "searchInput"
-  );
-
-const problemDialog =
-  document.getElementById(
-    "problemDialog"
-  );
-
-const filterButtons =
-  document.querySelectorAll(
-    ".filter-btn"
-  );
-
-const currentFilterLabel =
-  document.getElementById(
-    "currentFilterLabel"
-  );
-
-const visibleCount =
-  document.getElementById(
-    "visibleCount"
-  );
-
-const mobileNavToggle =
-  document.getElementById(
-    "mobileNavToggle"
-  );
-
-const mainNav =
-  document.getElementById(
-    "mainNav"
-  );
-
-
-// Modal Instance
-let modalInstance = null;
-
-
-/**
- * Initializes the application
- */
-function init() {
-
-  if (problemDialog) {
-
-    modalInstance =
-      new ProblemModal(
-        problemDialog
-      );
-
+  if (sessionStorage.getItem("hackathonIntroSeen")) {
+    intro.remove();
+    canvas?.remove();
+    website?.classList.remove("site-loading");
+    return;
   }
 
-  updateStatsBadges();
+  sessionStorage.setItem("hackathonIntroSeen", "1");
+  document.body.style.overflow = "hidden";
 
-  bindFilterEvents();
+  if (!canvas || !window.THREE) return;
 
-  bindSearchEvents();
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 1000);
+  camera.position.z = 5;
 
-  bindCardInteractions();
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setSize(innerWidth, innerHeight);
 
-  bindMobileNav();
+  const positions = new Float32Array(800 * 3);
+  for (let i = 0; i < 800; i++) {
+    positions[i * 3] = (Math.random() - 0.5) * 15;
+    positions[i * 3 + 1] = (Math.random() - 0.5) * 10;
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 8;
+  }
 
-  initHeroCanvas();
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+  const material = new THREE.PointsMaterial({
+    color: 0x79a8c7,
+    size: 0.022,
+    transparent: true,
+    opacity: 0.5
+  });
+  const particles = new THREE.Points(geometry, material);
+  scene.add(particles);
 
-  // Initial render
-  renderProblems();
+  const animate = () => {
+    requestAnimationFrame(animate);
+    const t = performance.now() * 0.001;
+    particles.rotation.y = t * 0.018;
+    particles.rotation.x = Math.sin(t * 0.08) * 0.04;
+    renderer.render(scene, camera);
+  };
+  animate();
 
-  // Check URL query parameter for deep link
-  handleUrlDeepLink();
+  const show = (el, transition, transform = "none") => {
+    if (!el) return;
+    el.style.transition = transition;
+    el.style.opacity = "1";
+    el.style.transform = transform;
+    el.style.filter = "blur(0)";
+  };
 
+  const vitap = $("#vitap");
+  const organizers = $("#organizers");
+  const presents = $("#presents");
+  const name = $("#hackathon-name");
+
+  setTimeout(() => show(vitap, "opacity .9s ease,transform .9s ease,filter .9s ease", "scale(1)"), 100);
+  setTimeout(() => {
+    if (!vitap) return;
+    vitap.style.transition = "opacity .9s ease,transform .9s ease,filter .9s ease";
+    vitap.style.opacity = "0";
+    vitap.style.transform = "scale(1.06)";
+    vitap.style.filter = "blur(7px)";
+  }, 1700);
+  setTimeout(() => show(organizers, "opacity .8s ease,transform .8s ease", "scale(1)"), 1650);
+  setTimeout(() => show(presents, "opacity .5s ease,transform .5s ease", "translateY(0)"), 2650);
+  setTimeout(() => show(name, "opacity .8s ease,transform .8s ease", "translateY(0) scale(1)"), 3250);
+
+  const finish = () => {
+    intro.classList.add("intro-finished");
+    setTimeout(() => intro.remove(), 750);
+    canvas.remove();
+    website?.classList.remove("site-loading");
+    document.body.style.overflow = "auto";
+  };
+
+  setTimeout(finish, INTRO_DURATION);
+  skip?.addEventListener("click", finish);
+
+  addEventListener("resize", () => {
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  });
 }
 
+function renderProblemArea() {
+  const grid = $("#problemsGrid");
+  if (!grid) return;
 
-/**
- * Updates filter count badges in the UI
- */
-function updateStatsBadges() {
+  let filtered = getProblemsByDifficulty(activeDifficulty);
+  const query = searchQuery.trim().toLowerCase();
 
-  const stats =
-    getDifficultyStats();
-
-  const totalEl =
-    document.getElementById(
-      "statTotalProblems"
+  if (query) {
+    filtered = filtered.filter((p) =>
+      [p.title, p.code, p.category, p.shortDescription, ...(p.tags || [])]
+        .filter(Boolean)
+        .some((value) => String(value).toLowerCase().includes(query))
     );
-
-  if (totalEl) {
-    totalEl.textContent =
-      stats.all;
   }
 
-  const countAll =
-    document.getElementById(
-      "countAll"
-    );
+  const stats = getDifficultyStats();
+  $("#statTotalProblems").textContent = stats.all;
+  $("#countAll").textContent = stats.all;
+  $("#countEasy").textContent = stats.easy;
+  $("#countMedium").textContent = stats.medium;
+  $("#countHard").textContent = stats.hard;
+  $("#visibleCount").textContent = filtered.length;
 
-  const countEasy =
-    document.getElementById(
-      "countEasy"
-    );
+  const labels = {
+    all: "All Challenges",
+    easy: "Easy Challenges",
+    medium: "Medium Challenges",
+    hard: "Hard Challenges"
+  };
+  $("#currentFilterLabel").textContent = labels[activeDifficulty];
 
-  const countMedium =
-    document.getElementById(
-      "countMedium"
-    );
-
-  const countHard =
-    document.getElementById(
-      "countHard"
-    );
-
-
-  if (countAll) {
-    countAll.textContent =
-      stats.all;
-  }
-
-  if (countEasy) {
-    countEasy.textContent =
-      stats.easy;
-  }
-
-  if (countMedium) {
-    countMedium.textContent =
-      stats.medium;
-  }
-
-  if (countHard) {
-    countHard.textContent =
-      stats.hard;
-  }
-
+  grid.innerHTML = filtered.length
+    ? filtered.map(createProblemCard).join("")
+    : '<div class="empty-state"><h3>No matching challenges</h3><p>Try another search or difficulty.</p></div>';
 }
 
-
-/**
- * Filters problems according to current activeDifficulty and searchQuery
- */
-function getFilteredProblems() {
-
-  let list =
-    getProblemsByDifficulty(
-      activeDifficulty
-    );
-
-
-  if (
-    searchQuery.trim() !== ""
-  ) {
-
-    const q =
-      searchQuery
-        .toLowerCase()
-        .trim();
-
-
-    list =
-      list.filter(p => {
-
-        const titleMatch =
-          p.title
-            .toLowerCase()
-            .includes(q);
-
-        const codeMatch =
-          p.code
-            .toLowerCase()
-            .includes(q);
-
-        const catMatch =
-          p.category
-            .toLowerCase()
-            .includes(q);
-
-        const descMatch =
-          p.shortDescription
-            .toLowerCase()
-            .includes(q);
-
-        const tagMatch =
-          (p.tags || [])
-            .some(
-              tag =>
-                tag
-                  .toLowerCase()
-                  .includes(q)
-            );
-
-        return (
-          titleMatch ||
-          codeMatch ||
-          catMatch ||
-          descMatch ||
-          tagMatch
-        );
-
+function bindProblems() {
+  document.querySelectorAll(".filter-btn").forEach((button) => {
+    button.addEventListener("click", () => {
+      activeDifficulty = button.dataset.filter;
+      document.querySelectorAll(".filter-btn").forEach((b) => {
+        const current = b === button;
+        b.classList.toggle("active", current);
+        b.setAttribute("aria-selected", current ? "true" : "false");
       });
-
-  }
-
-  return list;
-
-}
-
-
-/**
- * Renders problem cards into grid
- */
-function renderProblems() {
-
-  if (!problemsGrid) return;
-
-  const filtered =
-    getFilteredProblems();
-
-
-  // Update visible counts & summary text
-  if (visibleCount) {
-
-    visibleCount.textContent =
-      filtered.length;
-
-  }
-
-
-  if (currentFilterLabel) {
-
-    const labelMap = {
-
-      all:
-        "All Challenges",
-
-      easy:
-        "Easy Challenges",
-
-      medium:
-        "Medium Challenges",
-
-      hard:
-        "Hard Challenges"
-
-    };
-
-    currentFilterLabel.textContent =
-      labelMap[activeDifficulty]
-      || "Challenges";
-
-  }
-
-
-  if (filtered.length === 0) {
-
-    problemsGrid.innerHTML = `
-
-      <div class="empty-state">
-
-        <svg
-          width="48"
-          height="48"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <circle
-            cx="11"
-            cy="11"
-            r="8"
-          ></circle>
-
-          <line
-            x1="21"
-            y1="21"
-            x2="16.65"
-            y2="16.65"
-          ></line>
-        </svg>
-
-        <h3>
-          No matching problems
-        </h3>
-
-        <p>
-          Try adjusting your search
-          or difficulty filter.
-        </p>
-
-        <button
-          type="button"
-          class="btn-reset-filter"
-          id="resetFilterBtn"
-        >
-          Reset Filters
-        </button>
-
-      </div>
-
-    `;
-
-
-    const resetBtn =
-      document.getElementById(
-        "resetFilterBtn"
-      );
-
-
-    if (resetBtn) {
-
-      resetBtn.addEventListener(
-        "click",
-        () => {
-
-          activeDifficulty =
-            "all";
-
-          searchQuery = "";
-
-          if (searchInput) {
-            searchInput.value = "";
-          }
-
-
-          filterButtons.forEach(
-            btn => {
-
-              const isAll =
-                btn.dataset.filter ===
-                "all";
-
-              btn.classList.toggle(
-                "active",
-                isAll
-              );
-
-              btn.setAttribute(
-                "aria-selected",
-                isAll
-                  ? "true"
-                  : "false"
-              );
-
-            }
-          );
-
-
-          renderProblems();
-
-        }
-      );
-
-    }
-
-    return;
-
-  }
-
-
-  // Render cards
-  problemsGrid.innerHTML =
-    filtered
-      .map(
-        p => createProblemCard(p)
-      )
-      .join("");
-
-}
-
-
-function escapeHtml(str) {
-
-  if (!str) return "";
-
-  return String(str).replace(
-    /[&<>"']/g,
-    m => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#039;"
-    })[m]
-  );
-
-}
-
-
-/**
- * Binds tab click events for difficulty filter
- */
-function bindFilterEvents() {
-
-  filterButtons.forEach(
-    button => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          const filter =
-            button.getAttribute(
-              "data-filter"
-            );
-
-
-          if (
-            filter ===
-            activeDifficulty
-          ) {
-            return;
-          }
-
-
-          activeDifficulty =
-            filter;
-
-
-          // Update button visual & ARIA states
-          filterButtons.forEach(
-            btn => {
-
-              const isCurrent =
-                btn === button;
-
-              btn.classList.toggle(
-                "active",
-                isCurrent
-              );
-
-              btn.setAttribute(
-                "aria-selected",
-                isCurrent
-                  ? "true"
-                  : "false"
-              );
-
-            }
-          );
-
-
-          renderProblems();
-
-        }
-      );
-
-    }
-  );
-
-}
-
-
-/**
- * Binds search input filtering
- */
-function bindSearchEvents() {
-
-  if (!searchInput) return;
-
-
-  searchInput.addEventListener(
-    "input",
-    e => {
-
-      searchQuery =
-        e.target.value;
-
-      renderProblems();
-
-    }
-  );
-
-}
-
-
-/**
- * Sets up click and keyboard triggers on problem cards
- */
-function bindCardInteractions() {
-
-  if (!problemsGrid) return;
-
-
-  // Event delegation on grid for card clicks
-  problemsGrid.addEventListener(
-    "click",
-    e => {
-
-      const card =
-        e.target.closest(
-          ".problem-card"
-        );
-
-      if (!card) return;
-
-
-      const id =
-        card.getAttribute(
-          "data-id"
-        );
-
-      const problem =
-        getProblemById(id);
-
-
-      if (
-        problem &&
-        modalInstance
-      ) {
-
-        modalInstance.open(
-          problem,
-          card
-        );
-
-      }
-
-    }
-  );
-
-
-  // Keyboard accessibility
-  problemsGrid.addEventListener(
-    "keydown",
-    e => {
-
-      if (
-        e.key === "Enter" ||
-        e.key === " "
-      ) {
-
-        const card =
-          e.target.closest(
-            ".problem-card"
-          );
-
-
-        if (
-          card &&
-          e.target === card
-        ) {
-
-          e.preventDefault();
-
-
-          const id =
-            card.getAttribute(
-              "data-id"
-            );
-
-
-          const problem =
-            getProblemById(id);
-
-
-          if (
-            problem &&
-            modalInstance
-          ) {
-
-            modalInstance.open(
-              problem
-            );
-
-          }
-
-        }
-
-      }
-
-    }
-  );
-
-}
-
-
-/**
- * Deep link support: opens modal if URL has ?id=<number>
- */
-function handleUrlDeepLink() {
-
-  const urlParams =
-    new URLSearchParams(
-      window.location.search
-    );
-
-  const requestedId =
-    urlParams.get("id");
-
-
-  if (requestedId) {
-
-    const problem =
-      getProblemById(
-        requestedId
-      );
-
-
-    if (
-      problem &&
-      modalInstance
-    ) {
-
-      setTimeout(
-        () => {
-
-          modalInstance.open(
-            problem
-          );
-
-        },
-        100
-      );
-
-    }
-
-  }
-
-}
-
-
-/**
- * Mobile navigation menu toggle
- */
-function bindMobileNav() {
-
-  if (
-    !mobileNavToggle ||
-    !mainNav
-  ) {
-    return;
-  }
-
-
-  mobileNavToggle.addEventListener(
-    "click",
-    () => {
-
-      const isOpen =
-        mainNav.classList.toggle(
-          "mobile-open"
-        );
-
-
-      mobileNavToggle.setAttribute(
-        "aria-expanded",
-        isOpen
-          ? "true"
-          : "false"
-      );
-
-    }
-  );
-
-}
-
-
-/**
- * Subtle AI/Robotics Neural Mesh Canvas
- * Lightweight 2D canvas effect representing connected neural nodes.
- * Designed to be clean, restrained, high performance, and respectful of prefers-reduced-motion.
- */
-function initHeroCanvas() {
-
-  const canvas =
-    document.getElementById(
-      "heroCanvas"
-    );
-
-  if (!canvas) return;
-
-
-  // Check prefers-reduced-motion
-  if (
-    window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches
-  ) {
-    return;
-  }
-
-
-  const ctx =
-    canvas.getContext("2d");
-
-
-  let width;
-  let height;
-  let animationFrameId;
-
-
-  // Node particle collection
-  const nodes = [];
-
-  const nodeCount = 38;
-
-  const maxDistance = 140;
-
-
-  function resize() {
-
-    width =
-      canvas.width =
-        canvas.parentElement
-          .offsetWidth;
-
-    height =
-      canvas.height =
-        canvas.parentElement
-          .offsetHeight;
-
-  }
-
-
-  window.addEventListener(
-    "resize",
-    resize,
-    {
-      passive: true
-    }
-  );
-
-
-  resize();
-
-
-  // Create nodes
-  for (
-    let i = 0;
-    i < nodeCount;
-    i++
-  ) {
-
-    nodes.push({
-
-      x:
-        Math.random() * width,
-
-      y:
-        Math.random() * height,
-
-      vx:
-        (Math.random() - 0.5)
-        * 0.35,
-
-      vy:
-        (Math.random() - 0.5)
-        * 0.35,
-
-      radius:
-        Math.random() * 1.5
-        + 1.2
-
+      renderProblemArea();
     });
+  });
 
+  $("#searchInput")?.addEventListener("input", (event) => {
+    searchQuery = event.target.value;
+    renderProblemArea();
+  });
+
+  const dialog = $("#problemDialog");
+  const modal = dialog ? new ProblemModal(dialog) : null;
+
+  $("#problemsGrid")?.addEventListener("click", (event) => {
+    const card = event.target.closest(".problem-card");
+    if (!card || !modal) return;
+    modal.open(getProblemById(card.dataset.id), card);
+  });
+}
+
+async function fetchJSON(path, options = {}) {
+  const headers = { "Content-Type": "application/json", ...(options.headers || {}) };
+  const response = await fetch(API + path, { ...options, headers });
+  const data = response.status === 204 ? null : await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.error || "Request failed (" + response.status + ")");
+  return data;
+}
+
+function formatTime(value) {
+  if (!value) return "—";
+  const date = new Date(value);
+  return Number.isNaN(date.getTime())
+    ? "—"
+    : date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+}
+
+function renderLeaderboard(rows) {
+  const body = $("#leaderboardRows");
+  const status = $("#leaderboardStatus");
+  if (!body) return;
+
+  body.innerHTML = rows.length
+    ? rows.map((row) => [
+        '<tr class="' + (row.rank <= 3 ? "rank-" + row.rank : "") + '">',
+        '<td class="rank-cell">#' + String(row.rank).padStart(2, "0") + "</td>",
+        "<td><strong>" + escapeHtml(row.name) + "</strong></td>",
+        '<td class="member-cell">' + row.members.map(escapeHtml).join(", ") + "</td>",
+        '<td class="points-cell">' + row.totalPoints + "</td>",
+        '<td class="muted-cell">' + formatTime(row.lastScoredAt) + "</td>",
+        "</tr>"
+      ].join(""))
+      .join("")
+    : '<tr><td colspan="5" class="muted-cell">No teams yet.</td></tr>';
+
+  const podium = $("#podium");
+  if (podium) {
+    const top = rows.slice(0, 3);
+    podium.innerHTML = top.length
+      ? '<div class="section-kicker">TOP TEAMS</div><div class="podium-list">' +
+        top.map((row, index) =>
+          '<div class="podium-row podium-' + (index + 1) + '">' +
+          '<span class="podium-place">' + (index + 1) + "</span>" +
+          '<div><strong>' + escapeHtml(row.name) + "</strong><div class="muted-cell">" +
+          row.totalPoints + " pts</div></div></div>"
+        ).join("") +
+        "</div>"
+      : '<div class="muted-cell">Leaderboard is empty.</div>';
   }
 
+  if (status) status.textContent = "Live";
+}
 
-  function render() {
+function renderAnalytics(data) {
+  const totals = data?.totals || [];
+  const bars = $("#pointsBars");
+  if (bars) {
+    const max = Math.max(1, ...totals.map((t) => Math.max(0, Number(t.totalPoints) || 0)));
+    bars.innerHTML = totals.length
+      ? totals.map((t) =>
+          '<div class="analytics-bar-row"><span title="' + escapeHtml(t.name) + '">' +
+          escapeHtml(t.name) + '</span><div class="analytics-track"><i style="width:' +
+          (Math.max(0, Number(t.totalPoints) || 0) / max * 100) + '%"></i></div><b>' +
+          t.totalPoints + "</b></div>"
+        ).join("")
+      : '<div class="muted-cell">No scores yet.</div>';
+  }
 
-    ctx.clearRect(
-      0,
-      0,
-      width,
-      height
-    );
+  const breakdown = $("#difficultyBreakdown");
+  if (breakdown) {
+    breakdown.innerHTML = totals.length
+      ? (data.byDifficulty || []).map((team) =>
+          '<div class="difficulty-row"><strong>' + escapeHtml(team.name) + "</strong>" +
+          "<span>Easy " + team.easy + "</span><span>Medium " + team.medium +
+          "</span><span>Hard " + team.hard + "</span></div>"
+        ).join("")
+      : '<div class="muted-cell">No scores yet.</div>';
+  }
 
+  const timeline = $("#scoreTimeline");
+  if (timeline) {
+    const events = (data.timeline || [])
+      .flatMap((team) => team.series || [])
+      .sort((a, b) => new Date(a.time) - new Date(b.time));
 
-    // Update & draw nodes
-    for (
-      let i = 0;
-      i < nodes.length;
-      i++
-    ) {
-
-      const node =
-        nodes[i];
-
-
-      node.x +=
-        node.vx;
-
-      node.y +=
-        node.vy;
-
-
-      // Wrap around bounds
-      if (node.x < 0) {
-        node.x = width;
-      }
-
-      if (node.x > width) {
-        node.x = 0;
-      }
-
-      if (node.y < 0) {
-        node.y = height;
-      }
-
-      if (node.y > height) {
-        node.y = 0;
-      }
-
-
-      // Draw subtle node
-      ctx.beginPath();
-
-      ctx.arc(
-        node.x,
-        node.y,
-        node.radius,
-        0,
-        Math.PI * 2
-      );
-
-      ctx.fillStyle =
-        "rgba(56, 189, 248, 0.4)";
-
-      ctx.fill();
-
-
-      // Draw connections
-      for (
-        let j = i + 1;
-        j < nodes.length;
-        j++
-      ) {
-
-        const other =
-          nodes[j];
-
-
-        const dx =
-          other.x -
-          node.x;
-
-        const dy =
-          other.y -
-          node.y;
-
-
-        const dist =
-          Math.sqrt(
-            dx * dx +
-            dy * dy
-          );
-
-
-        if (
-          dist <
-          maxDistance
-        ) {
-
-          const alpha =
-            (
-              1 -
-              dist /
-                maxDistance
-            ) * 0.16;
-
-
-          ctx.beginPath();
-
-          ctx.moveTo(
-            node.x,
-            node.y
-          );
-
-          ctx.lineTo(
-            other.x,
-            other.y
-          );
-
-
-          ctx.strokeStyle =
-            `rgba(56, 189, 248, ${alpha})`;
-
-          ctx.lineWidth = 1;
-
-          ctx.stroke();
-
-        }
-
-      }
-
+    if (!events.length) {
+      timeline.innerHTML = '<div class="muted-cell">No score history yet.</div>';
+    } else {
+      const max = Math.max(1, ...events.map((event) => Math.max(0, Number(event.total) || 0)));
+      const recent = events.slice(-10);
+      timeline.innerHTML =
+        '<div class="timeline-summary"><strong>' + events.length +
+        '</strong><span>score events recorded</span></div><div class="timeline-stacked">' +
+        recent.map((event) =>
+          '<div class="timeline-point"><span>' + formatTime(event.time) +
+          '</span><i style="height:' + Math.max(14, ((Number(event.total) || 0) / max) * 100) +
+          '%"></i><b>' + event.total + "</b></div>"
+        ).join("") + "</div>";
     }
+  }
+}
 
+async function refreshPublicData() {
+  try {
+    const [leaderboard, stats] = await Promise.all([
+      fetchJSON("/api/leaderboard"),
+      fetchJSON("/api/stats")
+    ]);
+    renderLeaderboard(leaderboard);
+    renderAnalytics(stats);
+    $("#leaderboardStatus").textContent = "Live";
+  } catch (error) {
+    $("#leaderboardStatus").textContent = "Offline";
+  }
+}
 
-    animationFrameId =
-      requestAnimationFrame(
-        render
-      );
+function connectLiveLeaderboard() {
+  const stream = new EventSource(API + "/api/leaderboard/stream");
+  stream.onopen = () => { $("#leaderboardStatus").textContent = "Live"; };
+  stream.onerror = () => { $("#leaderboardStatus").textContent = "Reconnecting…"; };
+  stream.onmessage = (event) => {
+    try { renderLeaderboard(JSON.parse(event.data)); }
+    catch {}
+    refreshPublicData();
+  };
+}
 
+function setAdminVisibility(loggedIn = Boolean(adminKey)) {
+  const section = $("#admin");
+  if (!section) return;
+  section.hidden = !loggedIn;
+  $("#adminLoginView").hidden = loggedIn;
+  $("#adminDashboardView").hidden = !loggedIn;
+  $("#adminNavLink").hidden = !loggedIn;
+  $("#footerAdminLink").hidden = !loggedIn;
+}
+
+async function restoreAdminSession() {
+  if (!adminKey) {
+    setAdminVisibility(false);
+    return;
   }
 
-
-  render();
-
+  try {
+    await verifyAdminKey(adminKey);
+    setAdminVisibility(true);
+    await refreshAdmin();
+  } catch {
+    adminKey = "";
+    sessionStorage.removeItem("hackathonAdminKey");
+    setAdminVisibility(false);
+  }
 }
 
-
-// Start application once DOM is ready
-if (
-  document.readyState ===
-  "loading"
-) {
-
-  document.addEventListener(
-    "DOMContentLoaded",
-    init
-  );
-
-} else {
-
-  init();
-
+async function verifyAdminKey(key) {
+  return fetchJSON("/api/admin/verify", {
+    method: "POST",
+    headers: { "x-admin-key": key }
+  });
 }
+
+async function refreshAdmin() {
+  if (!adminKey) return;
+
+  try {
+    teams = await fetchJSON("/api/teams");
+    const select = $("#pointsTeamSelect");
+    select.innerHTML = '<option value="">Select team</option>' +
+      teams.map((team) => '<option value="' + team.id + '">' + escapeHtml(team.name) + "</option>").join("");
+
+    const container = $("#adminTeams");
+    container.innerHTML = teams.length
+      ? teams.map((team) =>
+          '<div class="admin-team-row" data-team="' + team.id + '">' +
+          '<div class="admin-team-info"><strong>' + escapeHtml(team.name) +
+          '</strong><span>' + team.totalPoints + ' pts</span><small>' +
+          (team.members.map((member) => escapeHtml(member.name)).join(", ") || "No members") +
+          "</small></div>" +
+          '<div class="admin-team-actions">' +
+          '<button type="button" data-action="rename" data-team="' + team.id + '">Rename</button>' +
+          '<button type="button" data-action="member" data-team="' + team.id + '">+ Member</button>' +
+          '<button type="button" data-action="history" data-team="' + team.id + '">History</button>' +
+          '<button type="button" data-action="delete" data-team="' + team.id + '">Delete</button>' +
+          "</div>" +
+          '<div class="admin-history" id="history-' + team.id + '" hidden></div>' +
+          "</div>"
+        ).join("")
+      : '<div class="muted-cell">No teams created yet.</div>';
+  } catch (error) {
+    showToast(error.message);
+  }
+}
+
+function showToast(message) {
+  const toast = $("#toast") || (() => {
+    const element = document.createElement("div");
+    element.id = "toast";
+    document.body.appendChild(element);
+    return element;
+  })();
+
+  toast.textContent = message;
+  toast.classList.add("show");
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => toast.classList.remove("show"), 2600);
+}
+
+function bindAdmin() {
+  $("#adminLoginForm")?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const key = $("#adminKeyInput").value;
+
+    try {
+      await verifyAdminKey(key);
+      adminKey = key;
+      sessionStorage.setItem("hackathonAdminKey", key);
+      $("#adminKeyInput").value = "";
+      $("#adminLoginError").textContent = "";
+      setAdminVisibility();
+      await refreshAdmin();
+    } catch {
+      adminKey = "";
+      sessionStorage.removeItem("hackathonAdminKey");
+      $("#adminLoginError").textContent = "Invalid admin key.";
+    }
+  });
+
+  $("#adminLogoutBtn")?.addEventListener("click", () => {
+    adminKey = "";
+    sessionStorage.removeItem("hackathonAdminKey");
+    setAdminVisibility();
+  });
+
+  $("#createTeamForm")?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const members = $("#teamMembersInput").value
+      .split(/[,\n]/)
+      .map((value) => value.trim())
+      .filter(Boolean);
+
+    try {
+      await fetchJSON("/api/admin/teams", {
+        method: "POST",
+        headers: { "x-admin-key": adminKey },
+        body: JSON.stringify({
+          name: $("#teamNameInput").value,
+          members
+        })
+      });
+      event.target.reset();
+      await refreshAdmin();
+      await refreshPublicData();
+      showToast("Team created");
+    } catch (error) {
+      showToast(error.message);
+    }
+  });
+
+  $("#pointsForm")?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    try {
+      await fetchJSON("/api/admin/teams/" + $("#pointsTeamSelect").value + "/points", {
+        method: "POST",
+        headers: { "x-admin-key": adminKey },
+        body: JSON.stringify({
+          points: Number($("#pointsInput").value),
+          difficulty: $("#difficultyInput").value,
+          reason: $("#reasonInput").value,
+          problem: $("#problemInput").value
+        })
+      });
+      event.target.reset();
+      await refreshAdmin();
+      await refreshPublicData();
+      showToast("Score recorded");
+    } catch (error) {
+      showToast(error.message);
+    }
+  });
+
+  $("#adminTeams")?.addEventListener("click", async (event) => {
+    const button = event.target.closest("[data-action]");
+    if (!button) return;
+
+    const teamId = button.dataset.team;
+
+    try {
+      if (button.dataset.action === "rename") {
+        const team = teams.find((item) => item.id === teamId);
+        const name = prompt("New team name:", team?.name || "");
+        if (name) {
+          await fetchJSON("/api/admin/teams/" + teamId, {
+            method: "PUT",
+            headers: { "x-admin-key": adminKey },
+            body: JSON.stringify({ name })
+          });
+        }
+      }
+
+      if (button.dataset.action === "member") {
+        const name = prompt("Member name:");
+        if (name) {
+          await fetchJSON("/api/admin/teams/" + teamId + "/members", {
+            method: "POST",
+            headers: { "x-admin-key": adminKey },
+            body: JSON.stringify({ name })
+          });
+        }
+      }
+
+      if (button.dataset.action === "history") {
+        const box = document.getElementById("history-" + teamId);
+        if (box.hidden) {
+          const team = await fetchJSON("/api/teams/" + teamId);
+          box.innerHTML = team.history.length
+            ? team.history.map((entry) =>
+                '<div class="history-item"><span>' +
+                (entry.points > 0 ? "+" : "") + entry.points +
+                '</span><span>' + escapeHtml(entry.reason || entry.problem || "Score entry") +
+                '</span><span>' + escapeHtml(entry.difficulty || "") +
+                '</span><button type="button" data-action="undo" data-entry="' +
+                entry.id + '" data-team="' + teamId + '">Undo</button></div>'
+              ).join("")
+            : "<div>No score history.</div>";
+          box.hidden = false;
+        } else {
+          box.hidden = true;
+        }
+        return;
+      }
+
+      if (button.dataset.action === "undo") {
+        await fetchJSON("/api/admin/points/" + button.dataset.entry, {
+          method: "DELETE",
+          headers: { "x-admin-key": adminKey }
+        });
+      }
+
+      if (button.dataset.action === "delete") {
+        const team = teams.find((item) => item.id === teamId);
+        if (!confirm('Delete "' + (team?.name || "this team") + '" and all scores?')) return;
+        await fetchJSON("/api/admin/teams/" + teamId, {
+          method: "DELETE",
+          headers: { "x-admin-key": adminKey }
+        });
+      }
+
+      await refreshAdmin();
+      await refreshPublicData();
+    } catch (error) {
+      showToast(error.message);
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  renderProblemArea();
+  bindProblems();
+  bindAdmin();
+  setAdminVisibility(false);
+  initIntro();
+  refreshPublicData();
+  connectLiveLeaderboard();
+  restoreAdminSession();
+});
