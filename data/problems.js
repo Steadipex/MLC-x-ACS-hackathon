@@ -1,230 +1,495 @@
 /**
  * ML x ACS Hackathon - Problem Statements Data
- * Contains comprehensive challenge statements categorized by difficulty: Easy, Medium, Hard.
+ * Official ML × ACS hackathon problem statements, categorized by difficulty: Easy, Medium, Hard.
  */
 
 export const problems = [
+  // Official problem statements (ML × ACS problem statement document)
   {
-    id: 1,
-    code: "PS-01",
-    title: "Smart AgriVision: Real-Time Crop Foliage Disease Detection",
-    category: "Computer Vision",
-    difficulty: "easy",
-    shortDescription: "Develop an edge-friendly image classification and segmentation pipeline to identify foliage diseases in staple crops with high accuracy.",
-    fullDescription: "Agricultural yield losses due to unmitigated leaf blights and viral strains cost farmers billions annually. Traditional lab diagnostics are slow and inaccessible to rural growers. In this challenge, participants must build a lightweight deep learning model capable of detecting and classifying 14 common crop leaf diseases under diverse ambient lighting, partial occlusions, and varied smartphone sensor resolutions.",
-    objectives: [
-      "Train a robust classifier or detector achieving >92% Macro F1-score across 14 disease classes.",
-      "Quantize the model (INT8/FP16) to ensure sub-50ms inference time on edge hardware (e.g., Raspberry Pi 4 or mobile CPU).",
-      "Produce visual heatmaps (Grad-CAM or attention maps) highlighting diseased leaf regions for farmer trust."
-    ],
-    constraints: [
-      "Model parameters must not exceed 15 Million.",
-      "Input resolution constrained to max 512x512 pixels.",
-      "Inference time must remain under 60ms on single CPU thread."
-    ],
-    evaluationMetric: "Macro F1-Score (70%) + Model Size / Latency Score (30%)",
-    dataset: {
-      name: "PlantVillage & FieldFoliage Curated Dataset",
-      url: "https://github.com/spMohanty/PlantVillage-Dataset",
-      description: "Over 54,000 annotated field and laboratory images of healthy and diseased leaves across 14 crops.",
-      size: "820 MB",
-      format: "PNG / JPEG with CSV metadata and bounding boxes"
+    "id": 1,
+    "code": "EVS-01",
+    "title": "Water Quality Testing (200-row Benchmark)",
+    "category": "Environmental Science",
+    "difficulty": "easy",
+    "shortDescription": "Water quality is a crucial aspect of environmental management, and it is essential to measure various physical, chemical, and biological parameters to monitor it effectively.",
+    "fullDescription": "Water quality is a crucial aspect of environmental management, and it is essential to measure various physical, chemical, and biological parameters to monitor it effectively. This dataset of 200 rows contains measurements of six critical water quality parameters widely used in water quality monitoring and analysis. The dataset provides a representative snapshot of water quality and can be used for various research, education, and decision-making purposes.",
+    "dataset": {
+      "name": "Kaggle dataset",
+      "url": "https://www.kaggle.com/datasets/shreyanshverma27/water-quality-testing"
     },
-    tags: ["Computer Vision", "PyTorch", "Edge AI", "MobileNet", "Grad-CAM"]
+    "links": [
+      {
+        "label": "Dataset (Kaggle)",
+        "url": "https://www.kaggle.com/datasets/shreyanshverma27/water-quality-testing"
+      }
+    ],
+    "tags": [
+      "Tabular Data",
+      "Water Quality",
+      "Environmental Monitoring"
+    ]
   },
   {
-    id: 2,
-    code: "PS-02",
-    title: "SentiPulse: Multilingual Clinical Sentiment & Triage Classifier",
-    category: "NLP & Healthcare",
-    difficulty: "easy",
-    shortDescription: "Build a multilingual NLP intent and triage classifier to prioritize urgent patient teleconsultation messages in 4 Indian languages.",
-    fullDescription: "Rural telehealth helplines receive tens of thousands of unstructured voice-to-text transcripts and direct chat messages daily. Rapid triage between mild symptoms and critical emergencies is life-saving. Teams will build an NLP pipeline that ingests multilingual transcribed patient texts (Hindi, Tamil, Telugu, and English) and classifies intent into triage urgency levels (Critical, Moderate, Informational).",
-    objectives: [
-      "Accurately categorize triage urgency across noisy, code-mixed patient statements.",
-      "Extract clinical symptom entities (e.g., duration, fever severity, oxygen difficulty).",
-      "Demonstrate zero-shot or few-shot resilience against typographical noise and colloquial idioms."
-    ],
-    constraints: [
-      "Pretrained transformer encoders cannot exceed 125M parameters (e.g., RoBERTa-base, IndicBERT, MuRIL).",
-      "No proprietary closed-source API calls allowed during offline evaluation.",
-      "Latency budget: Under 120ms per transcript batch."
-    ],
-    evaluationMetric: "Weighted F1 on Critical Triage Class (50%) + Macro F1 (30%) + Entity Span Recall (20%)",
-    dataset: {
-      name: "IndicTeleHealth Multi-Dialect Corpus",
-      url: "https://huggingface.co/datasets/ai4bharat/IndicSentiment",
-      description: "18,500 de-identified multilingual doctor-patient text snippets annotated for urgency and symptom severity.",
-      size: "145 MB",
-      format: "JSON Lines / UTF-8 text with NER offsets"
+    "id": 2,
+    "code": "MAT-01",
+    "title": "Predicting Solubility of Molecules",
+    "category": "Materials & Chemistry",
+    "difficulty": "easy",
+    "shortDescription": "Predicting solubility of molecules from molecular structures and cheminformatics descriptors using machine learning models.",
+    "fullDescription": "Predicting solubility of molecules from molecular structures and cheminformatics descriptors using machine learning models.",
+    "dataset": {
+      "name": "GitHub repository",
+      "url": "https://github.com/dataprofessor/code/blob/master/python/cheminformatics_predicting_solubility.ipynb"
     },
-    tags: ["NLP", "Transformers", "IndicBERT", "Healthcare AI", "Triage"]
+    "links": [
+      {
+        "label": "Notebook (GitHub)",
+        "url": "https://github.com/dataprofessor/code/blob/master/python/cheminformatics_predicting_solubility.ipynb"
+      },
+      {
+        "label": "Reference paper (DOI)",
+        "url": "https://doi.org/10.1021/ci034243x"
+      }
+    ],
+    "tags": [
+      "Cheminformatics",
+      "Regression",
+      "Solubility"
+    ]
   },
   {
-    id: 3,
-    code: "PS-03",
-    title: "RoboNav-Sim: LiDAR & Depth Obstacle Avoidance for AMRs",
-    category: "Autonomous Systems & Robotics",
-    difficulty: "medium",
-    shortDescription: "Design a collision-free local trajectory planner for Autonomous Mobile Robots operating in dynamic indoor warehouse environments.",
-    fullDescription: "Autonomous Mobile Robots (AMRs) in modern fulfilment centers navigate congested aisles alongside human pickers, sudden forklift traffic, and dropped merchandise. Traditional heuristic planners (like DWA or TEB) often suffer from freezing robot problems or jerky oscillations in dense dynamic bottlenecks. Participants must develop a learning-augmented or hybrid local planner using 2D/3D LiDAR scans and wheel odometry.",
-    objectives: [
-      "Navigate an AMR through 10 progressively challenging warehouse simulation maps without collisions.",
-      "Minimize trajectory jerk, total traversal time, and path clearance violations.",
-      "Demonstrate robust behavior in static and dynamic obstacle scenarios (moving pedestrians at 1.2 m/s)."
+    "id": 3,
+    "code": "EVS-02",
+    "title": "Water Quality Assessment and Prediction in Indian Regions",
+    "category": "Environmental Science",
+    "difficulty": "easy",
+    "shortDescription": "Build a predictive model that can classify whether a given water sample is “safe” or “unsafe” based on its chemical and physical parameters.",
+    "fullDescription": "Measurements of water quality parameters from various locations in India. Features include pH, hardness, solids, chloramines, sulfate, conductivity, organic carbon, trihalomethanes, turbidity, etc. Data includes labels for water quality classification (e.g. “safe” vs “unsafe”) or continuous scores if provided (from Indian Water Quality Data).",
+    "objectives": [
+      "Build a predictive model that can classify whether a given water sample is “safe” or “unsafe” based on its chemical and physical parameters.",
+      "Optionally, also predict a continuous water quality index or score (regression).",
+      "Perform feature importance/analysis: identify which water quality parameters most strongly affect safety classification or quality score."
     ],
-    constraints: [
-      "Control loop update rate must achieve >= 20 Hz (50ms per control cycle).",
-      "Actuator limits: Max linear velocity 1.5 m/s, max angular velocity 1.2 rad/s.",
-      "Must run inside provided Gazebo / ROS2 humble environment."
+    "outcome": [
+      "A user-friendly front-end tool where users (e.g., municipal authorities, environmental scientists) can input water parameter readings and get (a) classification: safe or unsafe, (b) quality score or risk level.",
+      "Visualizations: show feature contributions, maybe slider bars for each parameter, threshold indicators; perhaps comparison of multiple readings; map-based view if location metadata is present.",
+      "Performance dashboard: show classification metrics (accuracy, precision, recall), confusion matrix; for regression version, error metrics like RMSE, MAE."
     ],
-    evaluationMetric: "Trajectory Success Rate (40%) + Mean Time-to-Goal (30%) + Smoothness / Clearance (30%)",
-    dataset: {
-      name: "WarehouseSim-AMR Benchmark Suite",
-      url: "https://github.com/aws-robotics/aws-robomaker-small-warehouse-world",
-      description: "ROS2 bag files, Gazebo simulation worlds with synthetic LiDAR scans, dynamic human trajectories, and odometry logs.",
-      size: "2.4 GB",
-      format: "ROS2 Bags (.db3), URDF & Gazebo SDF worlds"
+    "dataset": {
+      "name": "Kaggle dataset",
+      "url": "https://www.kaggle.com/datasets/anbarivan/indian-water-quality-data"
     },
-    tags: ["Robotics", "ROS2", "LiDAR", "Path Planning", "Reinforcement Learning"]
+    "links": [
+      {
+        "label": "Dataset (Kaggle)",
+        "url": "https://www.kaggle.com/datasets/anbarivan/indian-water-quality-data"
+      }
+    ],
+    "tags": [
+      "Classification",
+      "Water Quality",
+      "Feature Importance"
+    ]
   },
   {
-    id: 4,
-    code: "PS-04",
-    title: "ZeroFault: Multimodal Industrial Anomaly Detection",
-    category: "Multimodal AI & IoT",
-    difficulty: "medium",
-    shortDescription: "Detect micro-fractures and thermal runaway risks in automated manufacturing using synchronized high-speed video and acoustic telemetry.",
-    fullDescription: "High-precision computer numerical control (CNC) and semiconductor assembly lines generate simultaneous acoustic emissions, motor vibration logs, and high-fps visual inspections. Relying on a single modality results in either false positives from ambient factory noise or visual occlusions from cooling lubricants. This challenge requires participants to build a multimodal self-supervised representation learner that flags abnormal equipment wear before catastrophic tool breakage.",
-    objectives: [
-      "Fuse 12-channel acoustic accelerometer time-series with 120 FPS visual inspection frames.",
-      "Establish an unsupervised or semi-supervised anomaly scoring boundary with <2% false alarm rate on clean reference runs.",
-      "Pinpoint anomaly onset timestamp within 150 milliseconds of mechanical degradation."
+    "id": 4,
+    "code": "MED-01",
+    "title": "Detecting Parkinson’s Disease from Drawing Patterns",
+    "category": "Medical AI",
+    "difficulty": "easy",
+    "shortDescription": "Develop a model that can distinguish between drawings made by Parkinson’s disease patients vs healthy individuals, based on the features of the drawings (shape, smoothness/jerkiness…",
+    "fullDescription": "Hand-drawn sketches/drawings collected from participants (both Parkinson’s disease patients and controls). Drawings include tasks such as spirals, lines, or other prescribed figures. Data includes labels indicating whether the drawing was made by someone with Parkinson’s disease, along with metadata such as drawing speed or pressure, if available.",
+    "objectives": [
+      "Develop a model that can distinguish between drawings made by Parkinson’s disease patients vs healthy individuals, based on the features of the drawings (shape, smoothness/jerkiness, pressure, timing, etc.).",
+      "Explore different approaches: image-based (treat the drawing as bitmap), vector/trace-based (if stroke order / timing data is available), or feature engineering (line smoothness, curvature, speed).",
+      "Make a multimodal classification comparison in terms of bias-variance trade-offs, prediction times, and memory footprints to determine the best models.",
+      "Optional: predict severity (if any metadata available), or classify type of drawing task."
     ],
-    constraints: [
-      "Only 50 normal operation runs provided for training (unsupervised / one-class learning setup).",
-      "Zero ground-truth anomaly examples permitted during preliminary model calibration."
+    "outcome": [
+      "A front-end tool (web or app) where a user can upload or draw an image (e.g. spiral drawing or line drawing) and receive a prediction: Parkinson’s vs no Parkinson’s, including confidence scores.",
+      "Provide visualization of features: perhaps overlay smoothing / jerkiness, show which parts of the drawing contributed to the decision.",
+      "Dashboard showing model performance: accuracy, precision / recall / F1-score, confusion matrix, ROC curve."
     ],
-    evaluationMetric: "AUROC on Anomaly Detection (50%) + Time-to-Detection Accuracy (30%) + F1-Score (20%)",
-    dataset: {
-      name: "MIMII & CastDefect Multimodal Industrial Benchmark",
-      url: "https://zenodo.org/record/3384388",
-      description: "Synchronized 16kHz audio, multi-axis triaxial accelerometer signals, and high-resolution industrial camera clips.",
-      size: "4.8 GB",
-      format: "WAV audio, CSV vibrations, MP4 / H.264 video streams"
+    "dataset": {
+      "name": "Kaggle dataset",
+      "url": "https://www.kaggle.com/datasets/kmader/parkinsons-drawings"
     },
-    tags: ["Multimodal", "Anomaly Detection", "Self-Supervised", "Signal Processing", "Industry 4.0"]
+    "links": [
+      {
+        "label": "Dataset (Kaggle)",
+        "url": "https://www.kaggle.com/datasets/kmader/parkinsons-drawings"
+      }
+    ],
+    "tags": [
+      "Computer Vision",
+      "Healthcare",
+      "Classification"
+    ]
   },
   {
-    id: 5,
-    code: "PS-05",
-    title: "BioGraph: Geometric GNN for Protein-Ligand Binding Affinity",
-    category: "Graph ML & Drug Discovery",
-    difficulty: "medium",
-    shortDescription: "Predict binding affinity (Kd/Ki) and pose validity for small molecule inhibitors using SE(3)-equivariant graph neural networks.",
-    fullDescription: "Accelerating computational drug discovery requires estimating whether a novel candidate chemical molecule binds effectively to target disease proteins without requiring multi-day molecular dynamics (MD) simulations. Teams will implement an E(3) or SE(3)-equivariant Graph Neural Network that ingests 3D coordinates, atomic numbers, and chemical bond graphs to predict experimental binding affinities.",
-    objectives: [
-      "Model 3D spatial rotational and translational equivariance in molecular ligand-pocket complexes.",
-      "Predict binding affinity values with low root-mean-square error (RMSE) on PDBbind test targets.",
-      "Generate atom-level contribution scores to elucidate key hydrogen bond and hydrophobic interactions."
+    "id": 5,
+    "code": "EVS-03",
+    "title": "Hourly Air Quality Prediction via Sensor Array",
+    "category": "Environmental Science",
+    "difficulty": "medium",
+    "shortDescription": "Build a model that can predict a target air quality measure (e.g. pollutant concentration, or an aggregated air quality index) based on the sensor readings and possibly other features…",
+    "fullDescription": "Hourly averaged responses from an array of 5 metal-oxide chemical sensors measuring various air quality related variables. The dataset contains ~9,357 instances.",
+    "objectives": [
+      "Build a model that can predict a target air quality measure (e.g. pollutant concentration, or an aggregated air quality index) based on the sensor readings and possibly other features such as time of day.",
+      "Optionally, detect anomalies or spikes in pollution (e.g. unusually high pollutant levels) from sensor signals.",
+      "Explore data preprocessing: handling missing values, sensor drift, normalization; feature engineering (temporal features like hour of day, day of week).",
+      "Implement hyper-parameter tuning using Bayesian optimization and randomized cross-validation to improve prediction accuracy and reduce overfitting.",
+      "Apply model stacking to capture spatial and temporal dynamics.",
+      "Evaluate model performance using metrics such as R², MAE, and MSE."
     ],
-    constraints: [
-      "Input representations must explicitly account for 3D atomic coordinates (not solely 2D SMILES strings).",
-      "Model training must complete within a 4-hour budget on a single NVIDIA T4/V100 GPU."
+    "outcome": [
+      "A front-end tool (web or app) where a user can input current sensor values, time, etc., and the model returns the predicted air quality measure / pollutant level / AQI.",
+      "Include visualization: time-series plots (showing predictions vs past observations), alert system (warning if predicted pollutant level exceeds safe threshold), graphs of sensor readings, and perhaps a map or geospatial view if location data is available.",
+      "Dashboard showing how well the model performs (error metrics like RMSE, MAE, maybe classification metrics if thresholds used), trending predictions, and historical data comparison."
     ],
-    evaluationMetric: "Pearson Correlation Coefficient (r) (50%) + RMSE in pKd/pKi (30%) + Pose Ranking Accuracy (20%)",
-    dataset: {
-      name: "PDBbind v2020 Refined Core Set",
-      url: "http://www.pdbbind.org.cn/",
-      description: "Over 5,300 curated 3D protein-ligand crystal complexes with experimentally measured binding constants.",
-      size: "1.9 GB",
-      format: "PDB, MOL2, and SDF chemical structure formats"
+    "dataset": {
+      "name": "Kaggle dataset",
+      "url": "https://www.kaggle.com/datasets/fedesoriano/air-quality-data-set/data"
     },
-    tags: ["Graph ML", "PyTorch Geometric", "Equivariant GNN", "Bioinformatics", "Drug Discovery"]
+    "links": [
+      {
+        "label": "Dataset (Kaggle)",
+        "url": "https://www.kaggle.com/datasets/fedesoriano/air-quality-data-set/data"
+      }
+    ],
+    "tags": [
+      "Time Series",
+      "Air Quality",
+      "Ensemble Models"
+    ]
   },
   {
-    id: 6,
-    code: "PS-06",
-    title: "SwarmSync: Decentralized Drone Swarm in GPS-Denied Environments",
-    category: "Robotics & Multi-Agent RL",
-    difficulty: "hard",
-    shortDescription: "Formulate a decentralized cooperative flight policy for quadrotor swarms navigating dense subterranean tunnels with zero GPS.",
-    fullDescription: "Search-and-rescue operations inside collapsed subterranean structures or deep mining shafts operate in GPS-denied, communication-constrained environments. A swarm of 6 quadrotors must collectively explore, map, and navigate unknown 3D corridors while maintaining line-of-sight communication mesh relays, avoiding inter-agent collisions, and surviving intermittent sensor dropouts. Participants will deploy Multi-Agent Reinforcement Learning (MARL) or decentralized consensus controllers.",
-    objectives: [
-      "Devise a decentralized policy executing independently on each drone agent using local onboard VIO and ultra-wideband (UWB) ranges.",
-      "Maximize mapped volumetric exploration percentage within a strict 5-minute mission battery window.",
-      "Guarantee 0% inter-drone collision rate and maintain continuous swarm connectivity."
+    "id": 6,
+    "code": "EVS-04",
+    "title": "Predicting Air Quality Index (AQI) Across Global Cities",
+    "category": "Environmental Science",
+    "difficulty": "medium",
+    "shortDescription": "Develop a predictive model to estimate the AQI for a given city based on input features.",
+    "fullDescription": "The dataset contains Air Quality Index (AQI) values for various pollutants across multiple cities worldwide. It includes features such as pollutant concentrations, meteorological data, and temporal information.",
+    "objectives": [
+      "Develop a predictive model to estimate the AQI for a given city based on input features.",
+      "Explore different modeling techniques, including regression models and machine learning algorithms.",
+      "Evaluate model performance using appropriate metrics and validate findings through cross-validation or external datasets."
     ],
-    constraints: [
-      "Ad-hoc inter-agent radio communication limited to 50 kbps packet bursts within a 15-meter sphere.",
-      "No centralized server or global observer allowed during real-time flight.",
-      "Full 6-DOF nonlinear quadrotor dynamics with realistic battery drain modeling."
+    "outcome": [
+      "A user-friendly web application where users can input city and date information to receive predicted AQI values.",
+      "Visualizations to interpret model predictions, such as feature importance and temporal trends.",
+      "Option to upload custom datasets for prediction and analysis."
     ],
-    evaluationMetric: "Explored 3D Volume (40%) + Zero Collision Guarantee (30%) + Swarm Connectivity Time (30%)",
-    dataset: {
-      name: "SubT-Tunnel Autonomous Swarm Simulation Suite",
-      url: "https://www.subtchallenge.com/",
-      description: "Simulated subterranean cave meshes, Crazyflie quadrotor physics plugins, noisy sensor profiles, and UWB ranging datasets.",
-      size: "6.2 GB",
-      format: "PyBullet / Isaac Gym environment & Rosbag trajectory benchmarks"
+    "dataset": {
+      "name": "Kaggle dataset",
+      "url": "https://www.kaggle.com/datasets/hasibalmuzdadid/global-air-pollution-dataset"
     },
-    tags: ["Multi-Agent RL", "Swarm Robotics", "Decentralized Control", "Isaac Gym", "UWB & VIO"]
+    "links": [
+      {
+        "label": "Dataset (Kaggle)",
+        "url": "https://www.kaggle.com/datasets/hasibalmuzdadid/global-air-pollution-dataset"
+      }
+    ],
+    "tags": [
+      "Regression",
+      "AQI",
+      "Global Cities"
+    ]
   },
   {
-    id: 7,
-    code: "PS-07",
-    title: "MLC x ACS hackathon website",
-    category: "Systems ML & Edge AI",
-    difficulty: "hard",
-    shortDescription: "build a website for a small hackathon",
-    fullDescription: "Build a small website for acs x mlc hackathon conducted by mlc and acs",
-    objectives: [
-      "Implement a fast draft-model speculative verification pipeline maintaining 100% token distribution equivalence to greedy decoding.",
-      "Achieve >= 18 tokens/second throughput on edge embedded hardware under 15W power constraints.",
-      "Develop fused dequantization-GEMM kernels with zero memory overhead spikes."
+    "id": 7,
+    "code": "MAT-02",
+    "title": "Predicting Material Performance from Experimental Data",
+    "category": "Materials & Chemistry",
+    "difficulty": "medium",
+    "shortDescription": "Build a predictive model that links material features and processing/structure parameters to a target functional property (for example: electrical conductivity, stability under certain…",
+    "fullDescription": "Supplementary experimental data from “Nature-style” publication (Springer), possibly including measurements of material compositions, processing parameters, structural characterizations (e.g. crystallography, morphology), and functional properties (e.g. conductivity, optical absorbance, stability). Data is in spreadsheet form (xlsx) with multiple features (input variables) and outcome measurements.",
+    "objectives": [
+      "Build a predictive model that links material features and processing/structure parameters to a target functional property (for example: electrical conductivity, stability under certain conditions, or optical performance) depending on what the dataset provides.",
+      "Explore models ranging from simple regressors (linear regression, tree-based) to more complex methods (random forests, gradient boosting, neural networks).",
+      "Also look into feature selection / importance to find which input variables most influence the output property.",
+      "Possibly incorporate data preprocessing: handling missing/erroneous entries, normalization/scaling; if there are categorical parameters, encoding them; maybe data augmentation or extrapolation for unseen parameter combinations."
     ],
-    constraints: [
-      "Target execution platform: 8GB total unified system memory ceiling.",
-      "Perplexity degradation on WikiText-2 / GSM8k must not exceed 0.25 compared to baseline FP16 model.",
-      "Must use open-source weights (Llama-3-8B-Instruct or Gemma-2-9B-It)."
+    "outcome": [
+      "A front-end tool (web app) where a user (e.g. materials scientist) can input values of the input variables (composition, processing settings, structural features) and get a prediction of the target functional property, along with confidence intervals or error estimates.",
+      "The UI should allow the user to explore “what if” scenarios: by changing input parameters and seeing how the property changes; perhaps sliders to vary compositions or processing settings.",
+      "Visualization of feature importance, model performance metrics (RMSE, MAE, R²), and possibly plots comparing predicted vs actual values.",
+      "Also allow upload of batches of data (e.g. Excel or CSV) to get predictions collectively."
     ],
-    evaluationMetric: "Tokens Per Second (TPS) (50%) + Memory Footprint (25%) + Perplexity Preservation (25%)",
-    dataset: {
-      name: "EdgeBench LLM Evaluation Suite & Calibration Corpora",
-      url: "https://huggingface.co/datasets/HuggingFaceH4/ultrachat_200k",
-      description: "20,000 conversational prompts, multi-turn tool-calling traces, calibration datasets, and automated latency profiling harnesses.",
-      size: "780 MB",
-      format: "JSON, Parquet, and Safetensors checkpoints"
+    "dataset": {
+      "name": "Springer supplementary data (XLSX)",
+      "url": "https://static-contentob.springer.com/esm/art%3A10.1038%2Fs44160-022-00233-y/MediaObjects/44160_2022_233_MOESM2_ESM.xlsx"
     },
-    tags: ["Systems ML", "Triton", "Quantization", "Speculative Decoding", "Edge Robotics"]
+    "links": [
+      {
+        "label": "Dataset (Springer supplementary XLSX)",
+        "url": "https://static-contentob.springer.com/esm/art%3A10.1038%2Fs44160-022-00233-y/MediaObjects/44160_2022_233_MOESM2_ESM.xlsx"
+      }
+    ],
+    "tags": [
+      "Materials Informatics",
+      "Regression",
+      "Feature Selection"
+    ]
   },
   {
-    id: 8,
-    code: "PS-08",
-    title: "EdgeLLM-Quant: Sub-20ms Speculative Decoding on Embedded Hardware",
-    category: "Systems ML & Edge AI",
-    difficulty: "hard",
-    shortDescription: "Build a custom tensor compilation kernel and speculative decoding engine for 7B LLMs on embedded robotics accelerators.",
-    fullDescription: "Autonomous humanoid and service robots require onboard conversational reasoning and immediate task planning without cloud latency and connectivity failure risks. Running contemporary 7B/8B parameter models on constrained embedded systems (e.g., Jetson Orin Nano, 8GB unified RAM) typically yields unacceptable speeds (< 4 tokens/sec). In this systems-engineering challenge, participants will combine 4-bit weight activation quantization (AWQ/GPTQ) with speculative draft models and custom fused CUDA/Triton kernels to achieve interactive conversational throughput.",
-    objectives: [
-      "Implement a fast draft-model speculative verification pipeline maintaining 100% token distribution equivalence to greedy decoding.",
-      "Achieve >= 18 tokens/second throughput on edge embedded hardware under 15W power constraints.",
-      "Develop fused dequantization-GEMM kernels with zero memory overhead spikes."
+    "id": 8,
+    "code": "MAT-03",
+    "title": "Powder Particle Classification using SEM Images",
+    "category": "Materials & Chemistry",
+    "difficulty": "medium",
+    "shortDescription": "Build a classification model that, given an SEM image (or cropped image of a single powder particle), predicts which powder type / material / alloy it belongs to (e.g. differentiating…",
+    "fullDescription": "Scanning Electron Microscopy (SEM) images of powder particles from different materials/alloys (e.g., AlSiMg, 316L stainless steel, TiAlV). The dataset includes raw SEM images, labels by powder type, contour coordinate files, and object summary files listing particle features (size, shape, contours).",
+    "objectives": [
+      "Build a classification model that, given an SEM image (or cropped image of a single powder particle), predicts which powder type / material / alloy it belongs to (e.g. differentiating AlSiMg vs 316L vs TiAlV).",
+      "Explore multiple approaches: traditional feature engineering (particle shape, size, contour metrics, texture) + classifiers (e.g. XGBoost, Random Forest); deep learning (CNNs) directly from images; object detection / segmentation to separate particles from background (if needed).",
+      "Optionally, evaluate how well models generalize across different imaging conditions (contrast, magnification) if such variation exists."
     ],
-    constraints: [
-      "Target execution platform: 8GB total unified system memory ceiling.",
-      "Perplexity degradation on WikiText-2 / GSM8k must not exceed 0.25 compared to baseline FP16 model.",
-      "Must use open-source weights (Llama-3-8B-Instruct or Gemma-2-9B-It)."
+    "outcome": [
+      "A web-based tool (or desktop app) where a user can upload: either a raw SEM image containing many powder particles, or cropped images of individual particles and the tool outputs the predicted powder type (material/alloy).",
+      "Visual feedback: highlight detected particles (if from raw image), show which particle was classified as which type; show confidence/probability scores; optionally show which features influenced prediction (shape, texture etc.).",
+      "Performance dashboard: report classification accuracy, confusion matrix, per-class precision/recall; if possible show feature importances.",
+      "If image upload has multiple particles, allow users to get summary statistics: e.g., distribution of predicted materials, particle size distributions."
     ],
-    evaluationMetric: "Tokens Per Second (TPS) (50%) + Memory Footprint (25%) + Perplexity Preservation (25%)",
-    dataset: {
-      name: "EdgeBench LLM Evaluation Suite & Calibration Corpora",
-      url: "https://huggingface.co/datasets/HuggingFaceH4/ultrachat_200k",
-      description: "20,000 conversational prompts, multi-turn tool-calling traces, calibration datasets, and automated latency profiling harnesses.",
-      size: "780 MB",
-      format: "JSON, Parquet, and Safetensors checkpoints"
+    "dataset": {
+      "name": "GitHub repository",
+      "url": "https://github.com/catauggie/AM-Powder-Classification"
     },
-    tags: ["Systems ML", "Triton", "Quantization", "Speculative Decoding", "Edge Robotics"]
+    "links": [
+      {
+        "label": "Dataset / code (GitHub)",
+        "url": "https://github.com/catauggie/AM-Powder-Classification"
+      }
+    ],
+    "tags": [
+      "Computer Vision",
+      "SEM Images",
+      "Classification"
+    ]
+  },
+  {
+    "id": 9,
+    "code": "MED-02",
+    "title": "Brain Tumor Classification / Medical Image Analysis from MRI Scans",
+    "category": "Medical AI",
+    "difficulty": "medium",
+    "shortDescription": "Classify brain MRI scans into tumor types (or Alzheimer's stages) with machine learning and deep learning models, and compare at least three of them.",
+    "fullDescription": "Magnetic Resonance Imaging (MRI) brain scans of patients, labeled with existing group categories. In some descriptions, this covers tumor classes (glioma, meningioma, nontumor, pituitary), while in others, it targets Alzheimer's staging labels (Non-, Very Mild-, Mild-, Moderate-Demented). Data preprocessing (resizing, normalization) is required.",
+    "objectives": [
+      "Extract meaningful parametric/structural features from MRI scans (e.g., texture, shape, fractal dimension).",
+      "Develop and train predictive machine learning or deep learning models that classify MRI images into tumor vs no tumor / specific tumor type, or stage prediction for Alzheimer's disease.",
+      "Assess the performance of at least three highly accurate models to validate clinical reliability.",
+      "Optionally extend to segment the tumor region within images (if enough annotated data or via weak supervision)."
+    ],
+    "outcome": [
+      "A web-based tool or app where a user (e.g. clinician or student) can upload an MRI image and obtain a prediction.",
+      "The UI should include confidence scores, where possible heatmaps / visualization (e.g. Grad-CAM or saliency) to show which part of the image the model focused on.",
+      "Compare multiple images, view performance metrics (accuracy, confusion matrix), and download reports."
+    ],
+    "dataset": {
+      "name": "Kaggle dataset",
+      "url": "https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset"
+    },
+    "links": [
+      {
+        "label": "Dataset (Kaggle)",
+        "url": "https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset"
+      }
+    ],
+    "tags": [
+      "Medical Imaging",
+      "MRI",
+      "Deep Learning"
+    ]
+  },
+  {
+    "id": 10,
+    "code": "MED-03",
+    "title": "Retinal Disease Classification (OCT) and Pediatric Pneumonia Diagnosis (Chest X-Ray)",
+    "category": "Medical AI",
+    "difficulty": "medium",
+    "shortDescription": "Build a deep learning–based classification framework leveraging transfer learning to achieve expert-level diagnostic accuracy on OCT images and pneumonia classification on chest X-rays.",
+    "fullDescription": "A large public dataset of retinal Optical Coherence Tomography (OCT) images labeled across 4 classes: Normal retina, Choroidal Neovascularization (CNV), Diabetic Macular Edema (DME), and Drusen, alongside Chest X-Ray images for pediatric pneumonia.",
+    "objectives": [
+      "Build a deep learning–based classification framework leveraging transfer learning to achieve expert-level diagnostic accuracy on OCT images and pneumonia classification on chest X-rays.",
+      "Provide interpretable outputs by highlighting key image regions.",
+      "Ensure careful data splitting (train/val/test) to avoid data leakage (especially when serial OCT slices are similar)."
+    ],
+    "outcome": [
+      "A web-based tool or desktop app where a user (eye-care professional or student) can upload an OCT image or Chest X-Ray and get the predicted class with confidence or probability scores.",
+      "Visual output: display a heat map / highlight of regions that contributed most to the classification.",
+      "Performance dashboard: show accuracy, confusion matrix, recall/sensitivity per class, and ROC curves."
+    ],
+    "dataset": {
+      "name": "Kaggle dataset",
+      "url": "https://www.kaggle.com/datasets/anirudhcv/labeled-optical-coherence-tomography-oct"
+    },
+    "links": [
+      {
+        "label": "Dataset (Kaggle)",
+        "url": "https://www.kaggle.com/datasets/anirudhcv/labeled-optical-coherence-tomography-oct"
+      }
+    ],
+    "tags": [
+      "Medical Imaging",
+      "Transfer Learning",
+      "OCT / X-Ray"
+    ]
+  },
+  {
+    "id": 11,
+    "code": "MED-04",
+    "title": "AI-Driven Discovery of Synergistic Drug Combinations for Pancreatic Cancer",
+    "category": "Medical AI",
+    "difficulty": "hard",
+    "shortDescription": "Develop a machine learning model to predict the synergy score of drug combinations based on their molecular descriptors.",
+    "fullDescription": "The PANC1 dataset comprises molecular descriptors of individual compounds and their combinations, along with corresponding experimental synergy scores. These data are stored in CSV format and include features such as chemical properties, molecular fingerprints, and synergy scores derived from in vitro experiments.",
+    "objectives": [
+      "Develop a machine learning model to predict the synergy score of drug combinations based on their molecular descriptors.",
+      "Explore various modeling techniques, including regression models, ensemble methods, and deep learning approaches.",
+      "Evaluate model performance using appropriate metrics and validate findings through cross-validation or external datasets."
+    ],
+    "outcome": [
+      "A user-friendly web application where users can input molecular descriptors of two or more drugs and receive a predicted synergy score.",
+      "Visualizations to interpret model predictions, such as feature importance plots or partial dependence plots.",
+      "Option to upload custom datasets for prediction and analysis."
+    ],
+    "dataset": {
+      "name": "GitHub repository",
+      "url": "https://github.com/ncats/PANC1"
+    },
+    "links": [
+      {
+        "label": "Dataset / code (GitHub)",
+        "url": "https://github.com/ncats/PANC1"
+      }
+    ],
+    "tags": [
+      "Drug Discovery",
+      "Regression",
+      "Ensemble Methods"
+    ]
+  },
+  {
+    "id": 12,
+    "code": "MAT-04",
+    "title": "Organic Chemistry Reaction Prediction via SMILES",
+    "category": "Materials & Chemistry",
+    "difficulty": "hard",
+    "shortDescription": "Predict the products of organic chemistry reactions from reactants written in SMILES, using a dataset of more than 9 lakh single-product reactions.",
+    "fullDescription": "SMILES (Simplified Molecular Input Line Entry System) is a line notation (a typographical method using printable characters) for entering and representing molecules and reactions. This dataset contains more than 9 lakhs of single product reactions in SMILES format. The first column contains reactants and the second column contains products.",
+    "dataset": {
+      "name": "IBM Box dataset",
+      "url": "https://ibm.ent.box.com/v/ReactionSeq2SeqDataset"
+    },
+    "links": [
+      {
+        "label": "Paper (arXiv)",
+        "url": "https://arxiv.org/abs/1711.04810"
+      },
+      {
+        "label": "Dataset (IBM Box)",
+        "url": "https://ibm.ent.box.com/v/ReactionSeq2SeqDataset"
+      }
+    ],
+    "tags": [
+      "SMILES",
+      "Seq2Seq",
+      "Reaction Prediction"
+    ]
+  },
+  {
+    "id": 13,
+    "code": "MAT-05",
+    "title": "Synthetic Chemical Reaction Dynamics via Neural ODEs",
+    "category": "Materials & Chemistry",
+    "difficulty": "hard",
+    "shortDescription": "Predict the mass of each component over time in a synthetic A + B → C + D reaction, tested on reconstruction, extrapolation and completion.",
+    "fullDescription": "Featured at \"Prior knowledge meets Neural ODEs: a two-stage training method for improved explainability\" a Tiny Paper @ ICLR 2023. The chemical reaction dataset is a synthetic reaction with four chemical components defined by A + B → C + D. At the first time step there is 1g of A and 1g of B. The goal is to predict the mass of each component over time.",
+    "objectives": [
+      "Reconstruction: evaluate the performance at predicting the same time steps used for training;",
+      "Extrapolation: evaluate the performance at predicting for a longer time horizon than the one used for training;",
+      "Completion: evaluate the performance at predicting time steps in between the ones used for training.",
+      "Note that the law of the conservation of mass is being followed."
+    ],
+    "dataset": {
+      "name": "Kaggle dataset",
+      "url": "https://www.kaggle.com/datasets/cici118/synthetic-chemical-reaction"
+    },
+    "links": [
+      {
+        "label": "Paper (OpenReview)",
+        "url": "https://openreview.net/pdf?id=p7sHcNt_tqo"
+      },
+      {
+        "label": "Dataset (Kaggle)",
+        "url": "https://www.kaggle.com/datasets/cici118/synthetic-chemical-reaction"
+      }
+    ],
+    "tags": [
+      "Neural ODEs",
+      "Time Series",
+      "Scientific ML"
+    ]
+  },
+  {
+    "id": 14,
+    "code": "MAT-06",
+    "title": "Classifying Organic Reaction Mechanisms",
+    "category": "Materials & Chemistry",
+    "difficulty": "hard",
+    "shortDescription": "Develop a robust framework for mechanistic analysis of catalytic organic reactions.",
+    "fullDescription": "Develop a robust framework for mechanistic analysis of catalytic organic reactions. Create a deep neural network model capable of analyzing kinetic data to automatically classify reaction mechanisms without user input, reducing human error and overcoming the restrictions of small-step or steady-state reaction networks. Provide an AI-guided tool that streamlines mechanistic elucidation and contributes to the development of automated organic reaction discovery and greener, more sustainable chemical processes.",
+    "dataset": {
+      "name": "figshare dataset (University of Manchester)",
+      "url": "https://figshare.manchester.ac.uk/articles/dataset/Training_validation_and_test_set_for_M1-M20/16965292"
+    },
+    "links": [
+      {
+        "label": "Dataset (figshare)",
+        "url": "https://figshare.manchester.ac.uk/articles/dataset/Training_validation_and_test_set_for_M1-M20/16965292"
+      }
+    ],
+    "tags": [
+      "Deep Learning",
+      "Kinetics",
+      "Reaction Mechanisms"
+    ]
+  },
+  {
+    "id": 15,
+    "code": "MAT-07",
+    "title": "Meta-Learning for Selectivity Prediction in Asymmetric Catalysis",
+    "category": "Materials & Chemistry",
+    "difficulty": "hard",
+    "shortDescription": "Develop a meta-learning model that can predict the selectivity of new reactions based on limited data.",
+    "fullDescription": "The dataset comprises reaction data from asymmetric catalysis experiments, focusing on enantioselectivity outcomes. It includes features such as molecular descriptors, reaction conditions, and catalyst information, with labels indicating the observed selectivity (e.g., enantiomeric excess).",
+    "objectives": [
+      "Develop a meta-learning model that can predict the selectivity of new reactions based on limited data.",
+      "Utilize techniques like prototypical networks to learn shared reaction features across different tasks.",
+      "Benchmark the model's performance against traditional machine learning methods, such as random forests and graph neural networks."
+    ],
+    "outcome": [
+      "A web-based tool where users can input reaction conditions and receive predicted selectivity outcomes.",
+      "Visualizations to interpret model predictions, such as feature importance and reaction similarity.",
+      "Option to upload new reaction data for prediction and analysis."
+    ],
+    "dataset": {
+      "name": "GitHub repository",
+      "url": "https://github.com/sukriti243/Meta-learning-for-selectivity-prediction"
+    },
+    "links": [
+      {
+        "label": "Dataset / code (GitHub)",
+        "url": "https://github.com/sukriti243/Meta-learning-for-selectivity-prediction"
+      }
+    ],
+    "tags": [
+      "Meta-Learning",
+      "Catalysis",
+      "Prototypical Networks"
+    ]
   }
 ];
 
@@ -234,7 +499,9 @@ export function getProblemById(id) {
 
 export function getProblemsByDifficulty(difficulty) {
   if (!difficulty || difficulty === "all") {
-    return problems;
+    // Keep easy -> medium -> hard order; stable sort preserves order within a tier.
+    const rank = { easy: 0, medium: 1, hard: 2 };
+    return [...problems].sort((a, b) => (rank[a.difficulty] ?? 3) - (rank[b.difficulty] ?? 3));
   }
   return problems.filter(p => p.difficulty.toLowerCase() === difficulty.toLowerCase());
 }

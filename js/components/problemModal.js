@@ -114,6 +114,26 @@ export class ProblemModal {
       .map(item => `<li><span class="bullet-marker" aria-hidden="true">■</span><span>${escapeHtml(item)}</span></li>`)
       .join("");
 
+    const outcomeHtml = (problem.outcome || [])
+      .map(item => `<li><span class="bullet-marker" aria-hidden="true">\u25B9</span><span>${escapeHtml(item)}</span></li>`)
+      .join("");
+
+    const safeUrl = (url) => (/^https?:\/\//i.test(url || "") ? url : "#");
+    const extraLinks = (problem.links || []).filter((l) => l.url !== (problem.dataset || {}).url);
+    const extraLinksHtml = extraLinks.length
+      ? `<div class="dataset-extra-links">${extraLinks.map((l) =>
+          `<a href="${escapeHtml(safeUrl(l.url))}" target="_blank" rel="noopener noreferrer">${escapeHtml(l.label)} \u2197</a>`
+        ).join("")}</div>`
+      : "";
+
+    const section = (heading, listClass, html) => html
+      ? `<div class="modal-section">
+          <h4 class="section-heading">${heading}</h4>
+          <ul class="spec-list ${listClass}">${html}</ul>
+        </div>`
+      : "";
+    const twoUp = Boolean(objectivesHtml && constraintsHtml);
+
     const tagsHtml = (problem.tags || [])
       .map(tag => `<span class="tech-tag">${escapeHtml(tag)}</span>`)
       .join("");
@@ -139,23 +159,14 @@ export class ProblemModal {
         <p id="modalDesc" class="modal-description">${escapeHtml(problem.fullDescription)}</p>
       </div>
 
-      <div class="modal-grid-two">
-        <div class="modal-section">
-          <h4 class="section-heading">// CORE OBJECTIVES</h4>
-          <ul class="spec-list objectives-list">
-            ${objectivesHtml}
-          </ul>
-        </div>
-
-        <div class="modal-section">
-          <h4 class="section-heading">// TECHNICAL CONSTRAINTS</h4>
-          <ul class="spec-list constraints-list">
-            ${constraintsHtml}
-          </ul>
-        </div>
+      <div class="${twoUp ? "modal-grid-two" : ""}">
+        ${section("// CORE OBJECTIVES", "objectives-list", objectivesHtml)}
+        ${section("// TECHNICAL CONSTRAINTS", "constraints-list", constraintsHtml)}
       </div>
 
-      <div class="modal-section metric-box">
+      ${section("// EXPECTED OUTCOME &amp; UI", "outcome-list", outcomeHtml)}
+
+      ${problem.evaluationMetric ? `<div class="modal-section metric-box">
         <div class="metric-label">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
@@ -163,7 +174,7 @@ export class ProblemModal {
           EVALUATION CRITERIA &amp; BENCHMARK
         </div>
         <p class="metric-text">${escapeHtml(problem.evaluationMetric)}</p>
-      </div>
+      </div>` : ""}
 
       <div class="modal-section dataset-box">
         <div class="dataset-info">
@@ -175,17 +186,18 @@ export class ProblemModal {
             </svg>
             <div>
               <h5 class="dataset-name">${escapeHtml(dataset.name || "Challenge Dataset Repository")}</h5>
-              <div class="dataset-meta-specs">
-                <span>Size: ${escapeHtml(dataset.size || "Standard Repository")}</span>
-                <span>•</span>
-                <span>Format: ${escapeHtml(dataset.format || "Structured files")}</span>
-              </div>
+              ${(dataset.size || dataset.format) ? `<div class="dataset-meta-specs">
+                ${dataset.size ? `<span>Size: ${escapeHtml(dataset.size)}</span>` : ""}
+                ${(dataset.size && dataset.format) ? "<span>•</span>" : ""}
+                ${dataset.format ? `<span>Format: ${escapeHtml(dataset.format)}</span>` : ""}
+              </div>` : ""}
             </div>
           </div>
-          <p class="dataset-desc">${escapeHtml(dataset.description || "")}</p>
+          ${dataset.description ? `<p class="dataset-desc">${escapeHtml(dataset.description)}</p>` : ""}
+          ${extraLinksHtml}
         </div>
         <div class="dataset-action">
-          <a href="${escapeHtml(dataset.url || "#")}" target="_blank" rel="noopener noreferrer" class="btn btn-dataset">
+          <a href="${escapeHtml(safeUrl(dataset.url))}" target="_blank" rel="noopener noreferrer" class="btn btn-dataset">
             <span>Access Dataset</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>

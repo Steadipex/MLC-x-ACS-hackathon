@@ -1,0 +1,47 @@
+<section class="admin-section">
+  <div class="container">
+    <div class="admin-heading-row">
+      <div>
+        <div class="section-kicker">ORGANIZER CONSOLE</div>
+        <h2>Competition control panel</h2>
+        <p class="section-lead">Manage teams, members, scores, and score history.</p>
+      </div>
+      <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+        <a class="btn btn-secondary" href="/">Back to site</a>
+        <button class="btn btn-secondary" type="button" id="adminLogoutBtn">Lock dashboard</button>
+      </div>
+    </div>
+
+    <div class="admin-grid">
+      <div class="panel admin-card">
+        <h3>Create team</h3>
+        <form id="createTeamForm" class="stack-form">
+          <input id="teamNameInput" placeholder="Team name" required>
+          <textarea id="teamMembersInput" rows="4" placeholder="Members, one per line or comma separated"></textarea>
+          <button class="btn btn-primary" type="submit">Create team</button>
+        </form>
+      </div>
+
+      <div class="panel admin-card">
+        <h3>Award points</h3>
+        <form id="pointsForm" class="stack-form">
+          <select id="pointsTeamSelect" required><option value="">Select team</option></select>
+          <div class="form-grid-2">
+            <input id="pointsInput" type="number" placeholder="Points" required>
+            <select id="difficultyInput"><option value="">Difficulty</option><option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option></select>
+          </div>
+          <input id="reasonInput" placeholder="Reason (optional)">
+          <input id="problemInput" placeholder="Problem code/name (optional)">
+          <button class="btn btn-primary" type="submit">Record score</button>
+        </form>
+        <small>Use a negative value to deduct points.</small>
+      </div>
+    </div>
+
+    <div class="panel admin-card">
+      <h3>Teams</h3>
+      <div id="adminTeams"></div>
+    </div>
+  </div>
+</section>
+<div id="toast"></div>

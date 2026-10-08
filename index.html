@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ML × ACS Hackathon 2026</title>
-  <meta name="description" content="ML × ACS Hackathon 2026 — challenge statements, datasets, live leaderboard, and admin scoring dashboard.">
+  <meta name="description" content="ML × ACS Hackathon 2026 — challenge statements, datasets, and a live leaderboard.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -46,7 +46,6 @@
           <a href="#home" class="nav-link">Home</a>
           <a href="#problems" class="nav-link">Problems</a>
           <a href="#leaderboard" class="nav-link">Leaderboard</a>
-          <a href="#admin" class="nav-link nav-admin" id="adminNavLink" hidden>Admin</a>
         </nav>
 
         <div class="header-actions">
@@ -104,7 +103,7 @@
       <section class="leaderboard-section" id="leaderboard">
         <div class="container">
           <div class="section-kicker">LIVE COMPETITION</div>
-          <div class="leaderboard-heading-row"><div><h2>Live leaderboard</h2><p class="section-lead">Scores update automatically as authorized admins submit results.</p></div><span class="live-badge" id="leaderboardStatus">Connecting…</span></div>
+          <div class="leaderboard-heading-row"><div><h2>Live leaderboard</h2><p class="section-lead">Scores update automatically as results come in.</p></div><span class="live-badge" id="leaderboardStatus">Connecting…</span></div>
 
           <div class="leaderboard-layout">
             <div class="leaderboard-card panel">
@@ -126,63 +125,11 @@
         </div>
       </section>
 
-      <section class="admin-section" id="admin" hidden>
-        <div class="container">
-          <div id="adminLoginView" class="admin-gate panel">
-            <div class="admin-lock-icon">⌑</div>
-            <div><div class="section-kicker">RESTRICTED AREA</div><h2>Admin dashboard</h2><p>Only authorized organizers can manage teams and scores.</p></div>
-            <form id="adminLoginForm" class="admin-login-form">
-              <input id="adminKeyInput" type="password" placeholder="Admin key" required autocomplete="current-password">
-              <button class="btn btn-primary" type="submit">Unlock dashboard</button>
-            </form>
-            <p class="admin-error" id="adminLoginError"></p>
-          </div>
-
-          <div id="adminDashboardView" hidden>
-            <div class="admin-heading-row">
-              <div><div class="section-kicker">ORGANIZER CONSOLE</div><h2>Competition control panel</h2><p class="section-lead">Manage teams, members, scores, and score history.</p></div>
-              <button class="btn btn-secondary" type="button" id="adminLogoutBtn">Lock dashboard</button>
-            </div>
-
-            <div class="admin-grid">
-              <div class="panel admin-card">
-                <h3>Create team</h3>
-                <form id="createTeamForm" class="stack-form">
-                  <input id="teamNameInput" placeholder="Team name" required>
-                  <textarea id="teamMembersInput" rows="4" placeholder="Members, one per line or comma separated"></textarea>
-                  <button class="btn btn-primary" type="submit">Create team</button>
-                </form>
-              </div>
-
-              <div class="panel admin-card">
-                <h3>Award points</h3>
-                <form id="pointsForm" class="stack-form">
-                  <select id="pointsTeamSelect" required><option value="">Select team</option></select>
-                  <div class="form-grid-2">
-                    <input id="pointsInput" type="number" placeholder="Points" required>
-                    <select id="difficultyInput"><option value="">Difficulty</option><option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option></select>
-                  </div>
-                  <input id="reasonInput" placeholder="Reason (optional)">
-                  <input id="problemInput" placeholder="Problem code/name (optional)">
-                  <button class="btn btn-primary" type="submit">Record score</button>
-                </form>
-                <small>Use a negative value to deduct points.</small>
-              </div>
-            </div>
-
-            <div class="panel admin-card">
-              <h3>Teams</h3>
-              <div id="adminTeams"></div>
-            </div>
-          </div>
-        </div>
-      </section>
     </main>
 
-    <footer class="site-footer"><div class="container footer-inner"><div class="footer-copy">© 2026 ML Club × ACS</div><div class="footer-links"><a href="#problems">Problems</a><a href="#leaderboard">Leaderboard</a><a href="#admin" id="footerAdminLink" hidden>Admin</a></div></div></footer>
+    <footer class="site-footer"><div class="container footer-inner"><div class="footer-copy">© 2026 ML Club × ACS</div><div class="footer-links"><a href="#problems">Problems</a><a href="#leaderboard">Leaderboard</a></div></div></footer>
   </div>
 
-  <div id="toast"></div>
   <script type="module" src="js/main.js"></script>
 </body>
 </html>

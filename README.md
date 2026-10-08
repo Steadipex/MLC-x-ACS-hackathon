@@ -13,11 +13,19 @@ ADMIN_KEY=your-secret npm start      # Windows PowerShell: $env:ADMIN_KEY="your-
 |---|---|---|
 | `ADMIN_KEY` | `changeme` | Secret for all `/api/admin/*` routes. **Change it.** |
 | `PORT` | `4000` | Server port |
+| `NODE_ENV` | unset | Set to `production` to make the server refuse to start with the default key |
+| `TRUST_PROXY` | unset | Set to `1` when behind a reverse proxy so the per-IP lockout sees real client IPs |
 | `CORS_ORIGIN` | `*` | Frontend origin allowed to call the API (set to the real URL in production) |
 | `MAX_TEAM_SIZE` | `5` | Max members per team |
 | `DATA_DIR` | `./data` | Where `db.json` lives |
 
 Back up `data/db.json` if you want to keep results.
+
+## Website and admin access
+
+Run the server and open `http://localhost:4000`. It serves the website and the API together, so the frontend needs no extra config.
+
+The public site contains no admin UI: no link, no markup, no admin code or styles. Organizers go to `/admin` (not linked anywhere) and enter the `ADMIN_KEY`. Only after the server accepts the key does it send the dashboard HTML, CSS and JS (`/api/admin/panel/*`, key required). Every admin write is also checked server-side. After 10 wrong keys an IP is locked out for 15 minutes.
 
 ## Public endpoints (no auth)
 

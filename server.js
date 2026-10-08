@@ -9,10 +9,16 @@ const ADMIN_KEY = process.env.ADMIN_KEY || 'changeme';
 const CORS_ORIGIN = process.env.CORS_ORIGIN || '*';
 
 if (ADMIN_KEY === 'changeme') {
+  if (process.env.NODE_ENV === 'production') {
+    console.error('[fatal] Refusing to start in production with the default ADMIN_KEY. Set ADMIN_KEY.');
+    process.exit(1);
+  }
   console.warn('[warn] ADMIN_KEY is not set, using the default "changeme". Set it before the event!');
 }
 
 const app = express();
+if (process.env.TRUST_PROXY) app.set('trust proxy', Number(process.env.TRUST_PROXY) || 1);
+app.disable('x-powered-by');
 app.use(express.json({ limit: '100kb' }));
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -41,12 +47,41 @@ function safeEqual(a, b) {
   return crypto.timingSafeEqual(ha, hb);
 }
 
+// Brute-force protection: too many wrong keys from one IP locks it out for a while.
+const MAX_FAILS = 10;
+const LOCK_MS = 15 * 60 * 1000;
+const fails = new Map(); // ip -> { count, first }
+
+function lockedOut(ip) {
+  const rec = fails.get(ip);
+  if (!rec) return false;
+  if (Date.now() - rec.first > LOCK_MS) { fails.delete(ip); return false; }
+  return rec.count >= MAX_FAILS;
+}
+
+function recordFail(ip) {
+  const rec = fails.get(ip);
+  if (!rec || Date.now() - rec.first > LOCK_MS) fails.set(ip, { count: 1, first: Date.now() });
+  else rec.count += 1;
+}
+
+setInterval(() => {
+  const cutoff = Date.now() - LOCK_MS;
+  for (const [ip, rec] of fails) if (rec.first < cutoff) fails.delete(ip);
+}, LOCK_MS).unref();
+
 function requireAdmin(req, res, next) {
+  res.setHeader('Cache-Control', 'no-store');
+  if (lockedOut(req.ip)) {
+    return res.status(429).json({ error: 'Too many failed attempts. Try again in 15 minutes.' });
+  }
   const bearer = (req.get('authorization') || '').replace(/^Bearer\s+/i, '');
   const key = req.get('x-admin-key') || bearer;
   if (!key || !safeEqual(key, ADMIN_KEY)) {
+    recordFail(req.ip);
     return res.status(401).json({ error: 'Invalid or missing admin key' });
   }
+  fails.delete(req.ip);
   next();
 }
 
@@ -73,9 +108,24 @@ app.get('/api/leaderboard/stream', (req, res) => {
   });
 });
 
+// The admin login page is not linked from anywhere on the public site.
+app.get('/admin', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  res.sendFile(path.join(__dirname, 'admin', 'login.html'));
+});
+
 const admin = express.Router();
 admin.use(requireAdmin);
 admin.post('/verify', (req, res) => res.json({ ok: true }));
+
+// Dashboard markup, styles and script are only ever sent to a caller with a valid key.
+const PANEL_FILES = { html: 'panel.html', css: 'panel.css', js: 'panel.js' };
+admin.get('/panel/:type', (req, res) => {
+  const file = PANEL_FILES[req.params.type];
+  if (!file) return res.status(404).json({ error: 'Not found' });
+  res.sendFile(path.join(__dirname, 'admin', file));
+});
 admin.post('/teams', wrap((req, res) => res.status(201).json(store.createTeam(req.body))));
 admin.put('/teams/:teamId', wrap((req, res) => res.json(store.updateTeam(req.params.teamId, req.body))));
 admin.delete('/teams/:teamId', wrap((req, res) => {
@@ -98,6 +148,7 @@ app.use('/api/admin', admin);
 
 app.get('*', (req, res, next) => {
   if (req.path.startsWith('/api/')) return next();
+  if (/^\/admin(\/|$)/i.test(req.path)) return res.status(404).send('Not found');
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 

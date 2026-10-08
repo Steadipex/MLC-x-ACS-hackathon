@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Organizer sign-in</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    [hidden] { display:none !important; }
+    body { overflow:auto; }
+    .gate-wrap { min-height:100vh; display:grid; place-items:center; padding:1.5rem; }
+    .gate { width:100%; max-width:460px; padding:1.75rem; display:grid; gap:1rem; }
+    .gate form { display:grid; gap:.7rem; }
+    .gate input { width:100%; background:var(--bg-base); color:var(--text-main); border:1px solid var(--border-subtle); border-radius:10px; padding:.75rem .9rem; font:inherit; }
+    .gate-error { color:#fb7185; min-height:1.4em; margin:0; }
+  </style>
+</head>
+<body>
+  <div id="gateView" class="gate-wrap">
+    <div class="panel gate">
+      <div>
+        <div class="section-kicker">RESTRICTED</div>
+        <h2>Organizer sign-in</h2>
+      </div>
+      <form id="loginForm">
+        <input id="keyInput" type="password" placeholder="Access key" required autocomplete="current-password">
+        <button class="btn btn-primary" type="submit">Continue</button>
+      </form>
+      <p class="gate-error" id="loginError" role="alert"></p>
+      <a href="/" class="muted-cell">← Back to site</a>
+    </div>
+  </div>
+  <div id="panelRoot"></div>
+
+  <script>
+    (function () {
+      var STORE = "hackathonAdminKey";
+      var gate = document.getElementById("gateView");
+      var root = document.getElementById("panelRoot");
+      var errorBox = document.getElementById("loginError");
+
+      function lock() {
+        try { sessionStorage.removeItem(STORE); } catch (e) {}
+        location.reload();
+      }
+
+      async function unlock(key) {
+        var headers = { "x-admin-key": key };
+        var check = await fetch("/api/admin/verify", { method: "POST", headers: headers });
+        if (!check.ok) {
+          var data = await check.json().catch(function () { return {}; });
+          var err = new Error(data.error || "Invalid key");
+          err.status = check.status;
+          throw err;
+        }
+        var parts = await Promise.all(["html", "css", "js"].map(function (type) {
+          return fetch("/api/admin/panel/" + type, { headers: headers }).then(function (r) {
+            if (!r.ok) throw new Error("Could not load dashboard");
+            return r.text();
+          });
+        }));
+        var style = document.createElement("style");
+        style.textContent = parts[1];
+        document.head.appendChild(style);
+        root.innerHTML = parts[0];
+        gate.hidden = true;
+        gate.style.display = "none";
+        window.scrollTo(0, 0);
+        document.title = "Organizer console";
+        var url = URL.createObjectURL(new Blob([parts[2]], { type: "text/javascript" }));
+        var mod = await import(url);
+        URL.revokeObjectURL(url);
+        try { sessionStorage.setItem(STORE, key); } catch (e) {}
+        await mod.mount({ key: key, onLock: lock });
+      }
+
+      document.getElementById("loginForm").addEventListener("submit", async function (event) {
+        event.preventDefault();
+        var input = document.getElementById("keyInput");
+        errorBox.textContent = "";
+        try {
+          await unlock(input.value);
+          input.value = "";
+        } catch (e) {
+          errorBox.textContent = e.status === 429 ? e.message : "Invalid key.";
+        }
+      });
+
+      var saved = null;
+      try { saved = sessionStorage.getItem(STORE); } catch (e) {}
+      if (saved) unlock(saved).catch(function () {
+        try { sessionStorage.removeItem(STORE); } catch (e) {}
+      });
+    })();
+  </script>
+</body>
+</html>
