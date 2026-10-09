@@ -7,9 +7,13 @@ import {
 
 import { createProblemCard } from "./components/problemCard.js";
 import { ProblemModal } from "./components/problemModal.js";
+import { initIntroV2 } from "./intro-v2.js";
 
 const API = "";
-const INTRO_DURATION = 4800;
+// Absolute backstop only: normal completion comes from the intro-v2 callback,
+// which fires after the final title transition + hold. This must stay far
+// beyond any real sequence length so it can never cut the animation early.
+const INTRO_FAILSAFE_MS = 25000;
 const THREE_URL = "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
 const $ = (selector) => document.querySelector(selector);
 const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ({
@@ -23,23 +27,15 @@ function initIntro() {
   const intro = $("#intro");
   const canvas = $("#three-canvas");
   const website = $(".site-wrapper");
-  const skip = $("#skipIntro");
 
   if (!intro) return;
 
-  if (sessionStorage.getItem("hackathonIntroSeen")) {
-    intro.remove();
-    canvas?.remove();
-    website?.classList.remove("site-loading");
-    return;
-  }
-
-  sessionStorage.setItem("hackathonIntroSeen", "1");
+  // The intro plays on every full page load/reload: no session/local storage
+  // gating and no skip option. Completion comes from intro-v2.
   document.body.style.overflow = "hidden";
 
-  if (!canvas) return;
-
   // Particle background is cosmetic: if the CDN or WebGL is unavailable, the intro still plays.
+  if (canvas) {
   import(THREE_URL).then((THREE) => {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 1000);
@@ -82,43 +78,29 @@ function initIntro() {
       renderer.setSize(innerWidth, innerHeight);
       renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     });
-  }).catch(() => canvas.remove());
+  }).catch(() => canvas?.remove());
+  }
 
-  const show = (el, transition, transform = "none") => {
-    if (!el) return;
-    el.style.transition = transition;
-    el.style.opacity = "1";
-    el.style.transform = transform;
-    el.style.filter = "blur(0)";
-  };
-
-  const vitap = $("#vitap");
-  const organizers = $("#organizers");
-  const presents = $("#presents");
-  const name = $("#hackathon-name");
-
-  setTimeout(() => show(vitap, "opacity .9s ease,transform .9s ease,filter .9s ease", "scale(1)"), 100);
-  setTimeout(() => {
-    if (!vitap) return;
-    vitap.style.transition = "opacity .9s ease,transform .9s ease,filter .9s ease";
-    vitap.style.opacity = "0";
-    vitap.style.transform = "scale(1.06)";
-    vitap.style.filter = "blur(7px)";
-  }, 1700);
-  setTimeout(() => show(organizers, "opacity .8s ease,transform .8s ease", "scale(1)"), 1650);
-  setTimeout(() => show(presents, "opacity .5s ease,transform .5s ease", "translateY(0)"), 2650);
-  setTimeout(() => show(name, "opacity .8s ease,transform .8s ease", "translateY(0) scale(1)"), 3250);
-
+  // Foreground logo/title choreography lives in the isolated intro-v2 module
+  // (ported timings/transitions from the approved standalone landing page).
+  // Background Three.js particles, gating, skip, and teardown stay here.
+  // The intro finishes ONLY via the intro-v2 completion callback (after the
+  // full sequence + hold) or the Skip button — never on a fixed estimate.
+  let cancelIntroV2 = null;
+  let finished = false;
   const finish = () => {
+    if (finished) return;
+    finished = true;
+    cancelIntroV2?.();
     intro.classList.add("intro-finished");
     setTimeout(() => intro.remove(), 750);
-    canvas.remove();
+    canvas?.remove();
     website?.classList.remove("site-loading");
     document.body.style.overflow = "auto";
   };
+  cancelIntroV2 = initIntroV2(intro, finish);
 
-  setTimeout(finish, INTRO_DURATION);
-  skip?.addEventListener("click", finish);
+  setTimeout(finish, INTRO_FAILSAFE_MS);
 
 }
 

@@ -9,20 +9,38 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/intro-v2.css">
 </head>
 <body>
   <canvas id="three-canvas" aria-hidden="true"></canvas>
 
   <section id="intro" aria-label="ML × ACS Hackathon introduction">
-    <div id="vitap"><img src="assets/vitap-logo.avif" alt="VIT-AP University"></div>
-    <div id="organizers">
-      <img class="mlc-logo" src="assets/mlc-logo.jpg" alt="MLC">
-      <span class="multiply">×</span>
-      <img class="acs-logo" src="assets/acs-logo.jpg" alt="ACS">
+    <!-- Intro v2 (isolated): foreground animation. Background canvas + theme stay in style.css/main.js. -->
+    <div class="intro-v2">
+      <img class="intro-v2-vit" src="assets/vitap-logo-v2.png" alt="VIT-AP University" draggable="false">
+      <div class="intro-v2-marks">
+        <figure class="intro-v2-mark" data-mark="mlc">
+          <div class="intro-v2-art">
+            <canvas aria-hidden="true"></canvas>
+            <img src="assets/mlc-logo-v2.jpg" alt="Machine Learning Club logo" draggable="false">
+          </div>
+          <figcaption class="intro-v2-org">The Machine Learning Club</figcaption>
+        </figure>
+        <span class="intro-v2-x" aria-hidden="true">×</span>
+        <figure class="intro-v2-mark" data-mark="acs">
+          <div class="intro-v2-art">
+            <canvas aria-hidden="true"></canvas>
+            <img src="assets/acs-logo-v2.png" alt="American Chemical Society logo" draggable="false">
+          </div>
+          <figcaption class="intro-v2-org">American Chemical Society</figcaption>
+        </figure>
+      </div>
+      <div class="intro-v2-presents" aria-hidden="true">
+        <span class="rule"></span><span class="intro-v2-presents-word">Presents</span><span class="rule"></span>
+      </div>
+      <!-- Text is set at runtime from HACKATHON_NAME in js/intro-v2.js; fallback below. -->
+      <h1 class="intro-v2-title">HACKATHON NAME</h1>
     </div>
-    <div id="presents">PRESENTS</div>
-    <div id="hackathon-name">ML × ACS HACKATHON 2026</div>
-    <button id="skipIntro" type="button">Skip intro</button>
   </section>
 
   <div class="bg-grid-overlay" aria-hidden="true"></div>
