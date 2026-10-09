@@ -10,7 +10,7 @@
  */
 
 /* The only place the event title lives. Change this string when the name is finalised. */
-export const HACKATHON_NAME = "HACKATHON NAME";
+export const HACKATHON_NAME = "THE BYTE THE MOLE 2.0";
 
 const MARKS = [
   {
