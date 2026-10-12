@@ -5,8 +5,9 @@
   "type": "module",
   "main": "server.js",
   "scripts": {
-    "start": "node --env-file=.env server.js",
-    "dev": "node --env-file=.env --watch server.js"
+    "start": "node server.js",
+    "local": "node --env-file=.env server.js",
+    "dev":   "node --env-file=.env --watch server.js"
   },
   "engines": {
     "node": ">=18"
