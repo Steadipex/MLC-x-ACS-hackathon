@@ -258,3 +258,149 @@
     display: none;
   }
 }
+
+
+/* Keep the intro centered and contained on mobile */
+@media (max-width: 520px) {
+  #intro {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #intro .intro-v2 {
+    width: 100%;
+    min-height: 100%;
+    padding: 1rem;
+    box-sizing: border-box;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #intro .intro-v2-marks {
+    max-width: 100%;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #intro .intro-v2-title {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 520px) {
+  #intro .intro-v2 {
+    width: 100%;
+    min-height: 100dvh;
+    padding: 1rem 0.75rem;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  #intro .intro-v2-vit {
+    width: 82vw;
+  }
+
+  #intro .intro-v2-vit.is-docked {
+    top: 1rem;
+    left: calc(100% - 1rem);
+    width: clamp(90px, 25vw, 120px);
+  }
+
+  #intro .intro-v2-marks {
+    width: 100%;
+    justify-content: center;
+    align-items: flex-start;
+    gap: clamp(0.5rem, 3vw, 1rem);
+  }
+
+  #intro .intro-v2-mark {
+    width: calc(50% - 0.5rem);
+    min-width: 0;
+  }
+
+  #intro .intro-v2-art {
+    width: min(100%, 112px);
+  }
+
+  #intro .intro-v2-org {
+    max-width: 100%;
+    font-size: clamp(0.7rem, 3.2vw, 0.9rem);
+    overflow-wrap: anywhere;
+  }
+
+  #intro .intro-v2-x {
+    margin-bottom: 2rem;
+  }
+
+  #intro .intro-v2-presents {
+    margin-top: 1.5rem;
+    gap: 0.5rem;
+    max-width: 100%;
+  }
+
+  #intro .intro-v2-presents .rule {
+    width: clamp(20px, 7vw, 40px);
+  }
+
+  #intro .intro-v2-presents-word {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-indent: 0.3em;
+  }
+
+  #intro .intro-v2-title {
+    width: 100%;
+    font-size: clamp(1rem, 5vw, 1.6rem);
+    letter-spacing: 0.15em;
+    text-indent: 0.15em;
+    overflow-wrap: anywhere;
+  }
+
+  #intro .intro-v2-title.is-in {
+    letter-spacing: 0.08em;
+    text-indent: 0.08em;
+  }
+}
+
+
+/* Mobile viewport and horizontal centering override */
+@media (max-width: 520px) {
+  #intro {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: grid !important;
+    place-items: center !important;
+    overflow: hidden !important;
+  }
+
+  #intro .intro-v2 {
+    position: relative !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100vw !important;
+    min-height: 100% !important;
+    margin: 0 auto !important;
+    padding: 1rem !important;
+    transform: scale(0.75);
+    transform-origin: center center;
+    box-sizing: border-box !important;
+  }
+
+  #intro .intro-v2-marks {
+    justify-content: center !important;
+    width: 100% !important;
+  }
+}
